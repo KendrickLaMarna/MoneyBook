@@ -7,45 +7,43 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import java.util.*
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import android.content.Intent
+import android.widget.Toast
 
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
-    //Declaring EditText
+class MainActivity : AppCompatActivity() {
     private var editTextEmail: EditText? = null
     private var editTextPsw: EditText? = null
     private var alphanumeric: String? = null
-
-    //Send button
     private var loginButton: Button? = null
+    private var openRegisterWindowButton: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //Initializing the views
-        editTextEmail = findViewById<View>(R.id.editTextMail) as EditText
-        editTextPsw = findViewById<View>(R.id.editTextPassword) as EditText
+
+        editTextEmail = findViewById<View>(R.id.editTextSignUpMail) as EditText
+        editTextPsw = findViewById<View>(R.id.editTextSignUpPassword) as EditText
         loginButton = findViewById<View>(R.id.loginBtn) as Button
-        //Adding click listener
-        loginButton!!.setOnClickListener(this)
+        openRegisterWindowButton = findViewById<View>(R.id.signupBtn) as Button
+
+        openRegisterWindowButton!!.setOnClickListener() {
+
+            //Toast.makeText(this, "ciao", Toast.LENGTH_SHORT).show()
+            val registerWindowIntent = Intent(applicationContext, RegisterWindow::class.java)
+            startActivity(registerWindowIntent)
+
+
+        }
+
     }
 
 
-    private fun sendEmail() {
-        //Getting content for email
-        val email = editTextEmail!!.text.toString().trim { it <= ' ' }
-        val subject = "MoneyBook app authentication"
-        alphanumeric = UUID.randomUUID().toString().substring(0, 8);
-        val message = alphanumeric!!
 
-        //Creating SendMail object
-        val sm = SendMail(this, email, subject, message)
 
-        //Executing sendmail to send email
-        sm.execute()
-    }
 
-    override fun onClick(v: View?) {
-        sendEmail()
-    }
+
 }

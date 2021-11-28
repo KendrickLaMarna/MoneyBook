@@ -45,7 +45,7 @@ class SendMail: AsyncTask<Void,Void,Void> {
         super.onPreExecute();
         //Showing progress dialog while sending email
         progressDialog =
-            ProgressDialog.show(context, "Sending message", "Please wait...", false, false);
+            ProgressDialog.show(context, "Sto inviando il codice", "Attendere...", false, false);
     }
 
     override fun onPostExecute(aVoid: Void?) {
@@ -53,7 +53,7 @@ class SendMail: AsyncTask<Void,Void,Void> {
         //Dismissing the progress dialog
         progressDialog.dismiss();
         //Showing a success message
-        Toast.makeText(context, "Message Sent", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "Codice inviato!", Toast.LENGTH_LONG).show();
     }
 
     override fun doInBackground(vararg params: Void?): Void? {
