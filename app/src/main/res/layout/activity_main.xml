@@ -19,22 +19,22 @@
 
 
     <EditText
-        android:id="@+id/recipientEt"
+        android:id="@+id/editTextMail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/subjectEt"
-        android:hint="Recipient email"
+        app:layout_constraintBottom_toTopOf="@id/editTextPassword"
+        android:hint="Username"
         android:inputType="textEmailAddress"
         android:padding="10dp"
         android:textColor="@color/black" />
     <EditText
-        android:id="@+id/subjectEt"
+        android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/recipientEt"
-        app:layout_constraintBottom_toTopOf="@id/messageEt"
-        android:hint="Subject"
+        app:layout_constraintTop_toBottomOf="@id/editTextMail"
+        app:layout_constraintBottom_toTopOf="@id/loginBtn"
+        android:hint="Password"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:inputType="text|textCapSentences"
@@ -42,26 +42,28 @@
         android:textColor="@color/black"  />
 
 
-    <EditText
-        android:id="@+id/messageEt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/subjectEt"
-        app:layout_constraintBottom_toTopOf="@id/sendEmailBtn"
-        android:gravity="start"
-        android:hint="Enter message here..."
-        android:inputType="text|textCapSentences"
-        android:minHeight="150dp"
-        android:padding="10dp"
-        android:textColor="@color/black"  />
+
     <Button
-        android:id="@+id/sendEmailBtn"
+        android:id="@+id/signupBtn"
         style="@style/Base.Widget.AppCompat.Button.Colored"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/messageEt"
+        app:layout_constraintTop_toBottomOf="@id/editTextPassword"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/loginBtn"
         android:layout_gravity="end"
-        android:text="send Email"/>
+        android:text="REGISTRATI"/>
+    <Button
+        android:id="@+id/loginBtn"
+        style="@style/Base.Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/editTextPassword"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/signupBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_gravity="end"
+        android:text="LOGIN"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
