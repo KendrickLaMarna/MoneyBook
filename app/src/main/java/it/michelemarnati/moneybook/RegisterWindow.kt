@@ -9,6 +9,9 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import java.util.*
+import android.text.TextUtils
+import android.util.Patterns
+
 
 class RegisterWindow : AppCompatActivity(){
     private var editTextName: EditText? = null
@@ -36,9 +39,7 @@ class RegisterWindow : AppCompatActivity(){
             if(checkData()){
                 sendEmail()
             }
-            else{
 
-            }
 
         }
 
@@ -49,7 +50,7 @@ class RegisterWindow : AppCompatActivity(){
         val email = editTextEmail!!.text.toString().trim { it <= ' ' }
         val subject = "MoneyBook authentication"
         alphanumeric = UUID.randomUUID().toString().substring(0, 8);
-        val message = alphanumeric!!
+        val message = "Hi "+ editTextName!!.text.toString() + "! Please insert this code: " + alphanumeric!!
 
         //Creating SendMail object
         val sm = SendMail(this, email, subject, message)
@@ -59,18 +60,61 @@ class RegisterWindow : AppCompatActivity(){
     }
 
     private fun checkData(): Boolean{
-        if(editTextEmail!!.equals(editTextConfirmMail)
-            && !editTextEmail!!.equals("")
-            && editTextPsw!!.equals(editTextConfirmPsw)
-            && !editTextPsw!!.equals("")
-            && !editTextName!!.equals("")
-            && !editTextSurname!!.equals("")){
-            return true
+        var result: Boolean = false
+        if(isValidEmail(editTextEmail!!.text.toString())
+            && editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString())
+            && !(editTextEmail!!.text.toString().equals(""))
+            && editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString())
+            && !(editTextPsw!!.text.toString().equals(""))
+            && !(editTextName!!.text.toString().equals(""))
+            && !(editTextSurname!!.text.toString().equals(""))){
+            result = true
         }
         else{
-            return false
+            if(!(editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString()))){
+                editTextEmail!!.setError(getString(R.string.error_register_copy_mail))
+                editTextConfirmMail!!.setError(getString(R.string.error_register_copy_mail))
+                result = false
+            }
+            if(!isValidEmail(editTextEmail!!.text.toString())){
+                editTextEmail!!.setError(getString(R.string.error_invalid_mail))
+                editTextConfirmMail!!.setError(getString(R.string.error_invalid_mail))
+                result = false
+            }
+            if(!(editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString()))){
+                editTextPsw!!.setError(getString(R.string.error_register_copy_psw))
+                editTextConfirmPsw!!.setError(getString(R.string.error_register_copy_psw))
+                result = false
+            } else if(editTextPsw!!.text.toString().equals("")){
+                editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
+                editTextConfirmPsw!!.setError(getString(R.string.error_register_empty_psw))
+                result = false;
+            } else if(editTextPsw!!.text.toString().length < 5){
+                editTextPsw!!.setError(getString(R.string.error_register_short_psw))
+                editTextConfirmPsw!!.setError(getString(R.string.error_register_short_psw))
+                result = false
+            }
+            if(editTextName!!.text.toString().equals("")){
+                editTextName!!.setError(getString(R.string.error_register_empty_name))
+                result = false
+            }
+
+            if(editTextSurname!!.text.toString().equals("")){
+                editTextSurname!!.setError(getString(R.string.error_register_empty_surname))
+                result = false
+            }
         }
 
+        return result
+
+    }
+
+    private fun isValidEmail(target: CharSequence?): Boolean {
+        return if (TextUtils.isEmpty(target)) {
+            false
+        } else {
+            Patterns.EMAIL_ADDRESS.matcher(target).matches()
+        }
     }
 
 }
