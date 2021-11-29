@@ -1,5 +1,6 @@
 package it.michelemarnati.moneybook
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,8 @@ import androidx.fragment.app.Fragment
 import java.util.*
 import android.text.TextUtils
 import android.util.Patterns
+import android.app.Activity
+import android.os.Handler
 
 
 class RegisterWindow : AppCompatActivity(){
@@ -22,11 +25,12 @@ class RegisterWindow : AppCompatActivity(){
     private var editTextConfirmPsw: EditText? = null
     private var alphanumeric: String? = null
     private var registerWindowButton: Button? = null
+    private var LAUNCH_CONFIRM_EMAIL_CODE: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.register_window)
-
+        LAUNCH_CONFIRM_EMAIL_CODE = 1
         editTextName = findViewById<View>(R.id.editTextName) as EditText
         editTextSurname = findViewById<View>(R.id.editTextSurname) as EditText
         editTextEmail = findViewById<View>(R.id.editTextSignUpMail) as EditText
@@ -38,12 +42,35 @@ class RegisterWindow : AppCompatActivity(){
         registerWindowButton!!.setOnClickListener {
             if(checkData()){
                 sendEmail()
+                Handler().postDelayed({
+                    val confirmCodeWindowIntent = Intent(applicationContext, ConfirmEmailCode::class.java)
+                    try{
+                        confirmCodeWindowIntent.putExtra("emailCode", alphanumeric)
+                        startActivityForResult(confirmCodeWindowIntent, LAUNCH_CONFIRM_EMAIL_CODE)
+                    }catch(e: Exception){
+                        e.printStackTrace()
+
+                    }
+                }, 2000)
+
+
             }
 
 
         }
 
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == LAUNCH_CONFIRM_EMAIL_CODE) {
+            if (resultCode == RESULT_OK) {
+                finish()
+            }
+
+        }
+    }
+
 
     private fun sendEmail() {
         //Getting content for email

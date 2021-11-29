@@ -6,16 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!--EditText: Input the recipient-->
-
-    <!--EditText: Input the subject of email-->
-
-
-    <!--EditText: Input the message-->
-
-
-    <!--Button:   Launch existing email clients to send email-->
-
 
 
     <EditText
