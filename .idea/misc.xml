@@ -5,7 +5,7 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/confirm_email_code.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/register_window.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/register_window.xml" value="0.165" />
       </map>
     </option>
   </component>

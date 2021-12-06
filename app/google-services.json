@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "280316651003",
+    "project_id": "moneybook-86d63",
+    "storage_bucket": "moneybook-86d63.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280316651003:android:eb39670d41255df3d3975e",
+        "android_client_info": {
+          "package_name": "it.michelemarnati.moneybook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "280316651003-a6btt40dsnpl1ps3ou8hs6uck32octiu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDDMr9MN2wNUMr1ytljzKsEYy0mk9dXUo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "280316651003-a6btt40dsnpl1ps3ou8hs6uck32octiu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

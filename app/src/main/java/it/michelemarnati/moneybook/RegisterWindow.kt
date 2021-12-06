@@ -13,7 +13,18 @@ import java.util.*
 import android.text.TextUtils
 import android.util.Patterns
 import android.app.Activity
+import android.content.ContentValues.TAG
 import android.os.Handler
+import android.util.Log
+import android.widget.Toast
+import androidx.annotation.NonNull
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 
 
 class RegisterWindow : AppCompatActivity(){
@@ -26,6 +37,8 @@ class RegisterWindow : AppCompatActivity(){
     private var alphanumeric: String? = null
     private var registerWindowButton: Button? = null
     private var LAUNCH_CONFIRM_EMAIL_CODE: Int = 0
+    private lateinit var database: DatabaseReference
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -38,6 +51,12 @@ class RegisterWindow : AppCompatActivity(){
         editTextPsw = findViewById<View>(R.id.editTextSignUpPassword) as EditText
         editTextConfirmPsw = findViewById<View>(R.id.confirmPassword) as EditText
         registerWindowButton = findViewById<View>(R.id.signupButton) as Button
+
+        //get the Firebase Database
+        database = FirebaseDatabase.getInstance("https://moneybook-86d63-default-rtdb.europe-west1.firebasedatabase.app").reference
+
+        //Initialize the Firebase auth
+        auth = Firebase.auth
 
         registerWindowButton!!.setOnClickListener {
             if(checkData()){
@@ -65,6 +84,46 @@ class RegisterWindow : AppCompatActivity(){
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == LAUNCH_CONFIRM_EMAIL_CODE) {
             if (resultCode == RESULT_OK) {
+                //User has written the correct code
+                auth.createUserWithEmailAndPassword(editTextEmail!!.text.toString(), editTextPsw!!.text.toString())
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success")
+                            //val user = auth.currentUser
+                            val user = User(
+                                editTextName!!.text.toString(),
+                                editTextSurname!!.text.toString(),
+                                editTextEmail!!.text.toString(),
+                                editTextPsw!!.text.toString()
+                            )
+
+                            //Insert user data in Firebase database
+                            database.child("users").child(auth.currentUser!!.uid).setValue(user)
+                                .addOnSuccessListener(this, {
+                                    @Override fun onSuccess(aVoid: Void){
+                                        // SUCCESS
+                                        // Log the details
+                                        Log.d("FirebaseData","user data uploaded successfully");
+                                    }
+
+                                }).addOnFailureListener(this, OnFailureListener(){
+                                    @Override fun onFailure(@NonNull e: Exception){
+                                        // FAILURE
+                                        // Log the details
+                                        Log.d("FirebaseData","user data upload failed");
+                                    }
+                                });
+
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                            Toast.makeText(baseContext, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                //TODO: aprire finestra di login
                 finish()
             }
 
