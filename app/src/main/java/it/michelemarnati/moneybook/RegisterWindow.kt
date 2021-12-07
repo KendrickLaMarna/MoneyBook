@@ -18,9 +18,12 @@ import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.NonNull
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.SignInMethodQueryResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -90,7 +93,6 @@ class RegisterWindow : AppCompatActivity(){
                         if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success")
-                            //val user = auth.currentUser
                             val user = User(
                                 editTextName!!.text.toString(),
                                 editTextSurname!!.text.toString(),
@@ -146,8 +148,23 @@ class RegisterWindow : AppCompatActivity(){
     }
 
     private fun checkData(): Boolean{
-        var result: Boolean = false
-        if(isValidEmail(editTextEmail!!.text.toString())
+        var result = false
+        var newUser = false
+        auth.fetchSignInMethodsForEmail(editTextEmail!!.text.toString())
+            .addOnCompleteListener(OnCompleteListener<SignInMethodQueryResult>() {
+                @Override fun onComplete(@NonNull task: Task<SignInMethodQueryResult>) {
+
+                    newUser = task.getResult()!!.getSignInMethods()!!.isEmpty();
+
+                    if (newUser) {
+                        Log.e("TAG", "Is New User!");
+                    } else {
+                        Log.e("TAG", "Is Old User!");
+                    }
+                }
+            });
+        if(newUser
+            && isValidEmail(editTextEmail!!.text.toString())
             && editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString())
             && !(editTextEmail!!.text.toString().equals(""))
             && editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString())
@@ -157,6 +174,11 @@ class RegisterWindow : AppCompatActivity(){
             result = true
         }
         else{
+            if(!newUser){
+                editTextEmail!!.setError(getString(R.string.error_register_existing_mail))
+                editTextConfirmMail!!.setError(getString(R.string.error_register_existing_mail))
+                result = false
+            }
             if(!(editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString()))){
                 editTextEmail!!.setError(getString(R.string.error_register_copy_mail))
                 editTextConfirmMail!!.setError(getString(R.string.error_register_copy_mail))
