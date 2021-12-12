@@ -8,5 +8,11 @@
     <string name="error_register_empty_name">Inserire il nome</string>
     <string name="error_register_empty_surname">Inserire il cognome</string>
     <string name="error_register_existing_mail">E-mail già in uso</string>
+    <string-array name="transaction_type_array">
+        <item>Stipendio</item>
+        <item>Tasse</item>
+        <item>Spesa</item>
+        <item>Varie</item>
+    </string-array>
 
 </resources>

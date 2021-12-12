@@ -2,17 +2,13 @@ package it.michelemarnati.moneybook
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import java.util.*
 import android.text.TextUtils
 import android.util.Patterns
-import android.app.Activity
 import android.content.ContentValues.TAG
 import android.os.Handler
 import android.util.Log
@@ -20,14 +16,13 @@ import android.widget.Toast
 import androidx.annotation.NonNull
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.SignInMethodQueryResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import kotlin.collections.ArrayList
 
 
 class RegisterWindow : AppCompatActivity(){
@@ -62,21 +57,22 @@ class RegisterWindow : AppCompatActivity(){
         auth = Firebase.auth
 
         registerWindowButton!!.setOnClickListener {
-            if(checkData()){
-                sendEmail()
-                Handler().postDelayed({
-                    val confirmCodeWindowIntent = Intent(applicationContext, ConfirmEmailCode::class.java)
-                    try{
-                        confirmCodeWindowIntent.putExtra("emailCode", alphanumeric)
-                        startActivityForResult(confirmCodeWindowIntent, LAUNCH_CONFIRM_EMAIL_CODE)
-                    }catch(e: Exception){
-                        e.printStackTrace()
-
-                    }
-                }, 2000)
-
-
-            }
+            checkData()
+//            if(checkData()){
+//                sendEmail()
+//                Handler().postDelayed({
+//                    val confirmCodeWindowIntent = Intent(applicationContext, ConfirmEmailCode::class.java)
+//                    try{
+//                        confirmCodeWindowIntent.putExtra("emailCode", alphanumeric)
+//                        startActivityForResult(confirmCodeWindowIntent, LAUNCH_CONFIRM_EMAIL_CODE)
+//                    }catch(e: Exception){
+//                        e.printStackTrace()
+//
+//                    }
+//                }, 2000)
+//
+//
+//            }
 
 
         }
@@ -93,11 +89,15 @@ class RegisterWindow : AppCompatActivity(){
                         if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success")
+                            val transactions: ArrayList<UserTransaction> = ArrayList<UserTransaction>()
+                            val transaction = UserTransaction()
+                            transactions.add(transaction)
                             val user = User(
                                 editTextName!!.text.toString(),
                                 editTextSurname!!.text.toString(),
                                 editTextEmail!!.text.toString(),
-                                editTextPsw!!.text.toString()
+                                editTextPsw!!.text.toString(),
+                                transactions
                             )
 
                             //Insert user data in Firebase database
@@ -125,10 +125,8 @@ class RegisterWindow : AppCompatActivity(){
                                 Toast.LENGTH_SHORT).show()
                         }
                     }
-                //TODO: aprire finestra di login
                 finish()
             }
-
         }
     }
 
@@ -147,73 +145,130 @@ class RegisterWindow : AppCompatActivity(){
         sm.execute()
     }
 
-    private fun checkData(): Boolean{
+    private fun checkData(){
         var result = false
-        var newUser = false
-        auth.fetchSignInMethodsForEmail(editTextEmail!!.text.toString())
-            .addOnCompleteListener(OnCompleteListener<SignInMethodQueryResult>() {
-                @Override fun onComplete(@NonNull task: Task<SignInMethodQueryResult>) {
+        var checkOk = 0
+        var email = editTextEmail!!.text.toString()
+        //check if user email already exists
+        auth.fetchSignInMethodsForEmail(email)
+            .addOnCompleteListener(OnCompleteListener<SignInMethodQueryResult> { task ->
+                val isNewUser = task.result.signInMethods!!.isEmpty()
 
-                    newUser = task.getResult()!!.getSignInMethods()!!.isEmpty();
+                if(isNewUser
+                    && isValidEmail(editTextEmail!!.text.toString())
+                    && editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString())
+                    && editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString())
+                    && !(editTextPsw!!.text.toString().equals(""))
+                    && !(editTextName!!.text.toString().equals(""))
+                    && !(editTextSurname!!.text.toString().equals(""))){
+                    result = true
+                    sendEmail()
+                    Handler().postDelayed({
+                        val confirmCodeWindowIntent = Intent(applicationContext, ConfirmEmailCode::class.java)
+                        try{
+                            confirmCodeWindowIntent.putExtra("emailCode", alphanumeric)
+                            startActivityForResult(confirmCodeWindowIntent, LAUNCH_CONFIRM_EMAIL_CODE)
+                        }catch(e: Exception){
+                            e.printStackTrace()
 
-                    if (newUser) {
-                        Log.e("TAG", "Is New User!");
-                    } else {
-                        Log.e("TAG", "Is Old User!");
+                        }
+                    }, 2000)
+                }
+                else{
+                    if(!isNewUser){
+                        editTextEmail!!.setError(getString(R.string.error_register_existing_mail))
+                        editTextConfirmMail!!.setError(getString(R.string.error_register_existing_mail))
+                        result = false
+                    }
+                    else if(!(editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString()))){
+                        editTextEmail!!.setError(getString(R.string.error_register_copy_mail))
+                        editTextConfirmMail!!.setError(getString(R.string.error_register_copy_mail))
+                        result = false
+                    }
+                    else if(!isValidEmail(editTextEmail!!.text.toString())){
+                        editTextEmail!!.setError(getString(R.string.error_invalid_mail))
+                        editTextConfirmMail!!.setError(getString(R.string.error_invalid_mail))
+                        result = false
+                    }
+                    if(!(editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString()))){
+                        editTextPsw!!.setError(getString(R.string.error_register_copy_psw))
+                        editTextConfirmPsw!!.setError(getString(R.string.error_register_copy_psw))
+                        result = false
+                    } else if(editTextPsw!!.text.toString().equals("")){
+                        editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
+                        editTextConfirmPsw!!.setError(getString(R.string.error_register_empty_psw))
+                        result = false;
+                    } else if(editTextPsw!!.text.toString().length < 5){
+                        editTextPsw!!.setError(getString(R.string.error_register_short_psw))
+                        editTextConfirmPsw!!.setError(getString(R.string.error_register_short_psw))
+                        result = false
+                    }
+                    if(editTextName!!.text.toString().equals("")){
+                        editTextName!!.setError(getString(R.string.error_register_empty_name))
+                        result = false
+                    }
+
+                    if(editTextSurname!!.text.toString().equals("")){
+                        editTextSurname!!.setError(getString(R.string.error_register_empty_surname))
+                        result = false
                     }
                 }
-            });
-        if(newUser
-            && isValidEmail(editTextEmail!!.text.toString())
-            && editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString())
-            && !(editTextEmail!!.text.toString().equals(""))
-            && editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString())
-            && !(editTextPsw!!.text.toString().equals(""))
-            && !(editTextName!!.text.toString().equals(""))
-            && !(editTextSurname!!.text.toString().equals(""))){
-            result = true
-        }
-        else{
-            if(!newUser){
-                editTextEmail!!.setError(getString(R.string.error_register_existing_mail))
-                editTextConfirmMail!!.setError(getString(R.string.error_register_existing_mail))
-                result = false
-            }
-            if(!(editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString()))){
-                editTextEmail!!.setError(getString(R.string.error_register_copy_mail))
-                editTextConfirmMail!!.setError(getString(R.string.error_register_copy_mail))
-                result = false
-            }
-            if(!isValidEmail(editTextEmail!!.text.toString())){
-                editTextEmail!!.setError(getString(R.string.error_invalid_mail))
-                editTextConfirmMail!!.setError(getString(R.string.error_invalid_mail))
-                result = false
-            }
-            if(!(editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString()))){
-                editTextPsw!!.setError(getString(R.string.error_register_copy_psw))
-                editTextConfirmPsw!!.setError(getString(R.string.error_register_copy_psw))
-                result = false
-            } else if(editTextPsw!!.text.toString().equals("")){
-                editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
-                editTextConfirmPsw!!.setError(getString(R.string.error_register_empty_psw))
-                result = false;
-            } else if(editTextPsw!!.text.toString().length < 5){
-                editTextPsw!!.setError(getString(R.string.error_register_short_psw))
-                editTextConfirmPsw!!.setError(getString(R.string.error_register_short_psw))
-                result = false
-            }
-            if(editTextName!!.text.toString().equals("")){
-                editTextName!!.setError(getString(R.string.error_register_empty_name))
-                result = false
+            })
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error getting sign in methods for user", exception)
             }
 
-            if(editTextSurname!!.text.toString().equals("")){
-                editTextSurname!!.setError(getString(R.string.error_register_empty_surname))
-                result = false
-            }
-        }
 
-        return result
+//
+//        if(newUser
+//            && isValidEmail(editTextEmail!!.text.toString())
+//            && editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString())
+//            && editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString())
+//            && !(editTextPsw!!.text.toString().equals(""))
+//            && !(editTextName!!.text.toString().equals(""))
+//            && !(editTextSurname!!.text.toString().equals(""))){
+//            result = true
+//        }
+//        else{
+//            if(!newUser){
+//                editTextEmail!!.setError(getString(R.string.error_register_existing_mail))
+//                editTextConfirmMail!!.setError(getString(R.string.error_register_existing_mail))
+//                result = false
+//            }
+//            if(!(editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString()))){
+//                editTextEmail!!.setError(getString(R.string.error_register_copy_mail))
+//                editTextConfirmMail!!.setError(getString(R.string.error_register_copy_mail))
+//                result = false
+//            }
+//            if(!isValidEmail(editTextEmail!!.text.toString())){
+//                editTextEmail!!.setError(getString(R.string.error_invalid_mail))
+//                editTextConfirmMail!!.setError(getString(R.string.error_invalid_mail))
+//                result = false
+//            }
+//            if(!(editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString()))){
+//                editTextPsw!!.setError(getString(R.string.error_register_copy_psw))
+//                editTextConfirmPsw!!.setError(getString(R.string.error_register_copy_psw))
+//                result = false
+//            } else if(editTextPsw!!.text.toString().equals("")){
+//                editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
+//                editTextConfirmPsw!!.setError(getString(R.string.error_register_empty_psw))
+//                result = false;
+//            } else if(editTextPsw!!.text.toString().length < 5){
+//                editTextPsw!!.setError(getString(R.string.error_register_short_psw))
+//                editTextConfirmPsw!!.setError(getString(R.string.error_register_short_psw))
+//                result = false
+//            }
+//            if(editTextName!!.text.toString().equals("")){
+//                editTextName!!.setError(getString(R.string.error_register_empty_name))
+//                result = false
+//            }
+//
+//            if(editTextSurname!!.text.toString().equals("")){
+//                editTextSurname!!.setError(getString(R.string.error_register_empty_surname))
+//                result = false
+//            }
+//        }
+//        return result
 
     }
 
@@ -226,3 +281,4 @@ class RegisterWindow : AppCompatActivity(){
     }
 
 }
+
