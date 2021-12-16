@@ -81,23 +81,27 @@ class MainMenu: AppCompatActivity() {
 
         //Serialize infos
         val single_transaction = ArrayList<UserTransaction>()
+
         single_transaction.add(UserTransaction(date.text.toString(), description.text.toString(), import.text.toString().toFloat(), type.selectedItem.toString()))
         //Insert user transaction in table
         populateTableTransactions(single_transaction)
 
-//        database.child("users").child(auth.currentUser!!.uid).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                val t: GenericTypeIndicator<List<UserTransaction>> =
-//                    object : GenericTypeIndicator<List<UserTransaction>>() {}
-//                user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
-//
-//
-//            }
-//
-//            override fun onCancelled(databaseError: DatabaseError) {
-//                Log.e(TAG, "onCancelled", databaseError.toException())
-//            }
-//        })
+        //Update data in Firebase database
+        database.child("users").child(auth.currentUser!!.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val t: GenericTypeIndicator<List<UserTransaction>> =
+                    object : GenericTypeIndicator<List<UserTransaction>>() {}
+                user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
+                user_transactions.add(single_transaction.get(0))
+                database.child("users").child(auth.currentUser!!.uid).child("transactions").setValue(user_transactions)
+
+
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "onCancelled", databaseError.toException())
+            }
+        })
     }
 
 
@@ -125,26 +129,26 @@ class MainMenu: AppCompatActivity() {
         for(transaction in user_transactions) run {
             val date = TextView(this@MainMenu)
             date.layoutParams = TableRow.LayoutParams(
-                android.widget.TableRow.LayoutParams.WRAP_CONTENT,
-                android.widget.TableRow.LayoutParams.WRAP_CONTENT)
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT)
             date.gravity = 1
             date.text = transaction.date
             val description = TextView(this@MainMenu)
             description.layoutParams = TableRow.LayoutParams(
-                android.widget.TableRow.LayoutParams.WRAP_CONTENT,
-                android.widget.TableRow.LayoutParams.WRAP_CONTENT)
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT)
             description.gravity = 1
             description.text = transaction.description
             val import = TextView(this@MainMenu)
             import.layoutParams = TableRow.LayoutParams(
-                android.widget.TableRow.LayoutParams.WRAP_CONTENT,
-                android.widget.TableRow.LayoutParams.WRAP_CONTENT)
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT)
             import.gravity = 1
             import.text = transaction.import.toString()
             val type = TextView(this@MainMenu)
             type.layoutParams = TableRow.LayoutParams(
-                android.widget.TableRow.LayoutParams.WRAP_CONTENT,
-                android.widget.TableRow.LayoutParams.WRAP_CONTENT)
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT)
             type.gravity = 1
             type.text = transaction.type
 
@@ -153,8 +157,8 @@ class MainMenu: AppCompatActivity() {
             trow.setPadding(10,10,10,10)
             trow.addView(date)
             trow.addView(description)
-            trow.addView(type)
             trow.addView(import)
+            trow.addView(type)
             table_transactions.addView(trow)
         }
     }
