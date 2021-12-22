@@ -12,7 +12,8 @@
         <item>Stipendio</item>
         <item>Tasse</item>
         <item>Spesa</item>
-        <item>Varie</item>
+        <item>Entrate varie</item>
+        <item>Uscite varie</item>
     </string-array>
 
 </resources>

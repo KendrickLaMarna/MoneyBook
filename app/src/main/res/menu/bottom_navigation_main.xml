@@ -11,7 +11,7 @@
             app:showAsAction="ifRoom" />
 
         <item
-            android:id="@+id/action_favorites"
+            android:id="@+id/action_months"
             android:enabled="true"
             android:icon="@drawable/ic_action_user_months"
             android:title="Movimenti Mensili"
