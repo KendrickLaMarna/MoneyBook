@@ -37,10 +37,13 @@ class MainMenu: AppCompatActivity() {
         bottomNavView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.action_recents -> {
+                    loadFragment(Home())
                 }
                 R.id.action_months -> {
+                    loadFragment(Statistics())
                 }
                 R.id.action_user_settings -> {
+                    loadFragment(UserSettings())
                 }
             }
             true
@@ -58,18 +61,7 @@ class MainMenu: AppCompatActivity() {
         transaction.replace(R.id.frame_container, fragment)
         transaction.commit()
     }
-    //function that hides Keyboard when called
-    fun hideSoftKeyboard(activity: Activity) {
-        val inputMethodManager: InputMethodManager = activity.getSystemService(
-            INPUT_METHOD_SERVICE
-        ) as InputMethodManager
-        if (inputMethodManager.isAcceptingText()) {
-            inputMethodManager.hideSoftInputFromWindow(
-                activity.currentFocus!!.windowToken,
-                0
-            )
-        }
-    }
+
 
 
 }

@@ -8,7 +8,23 @@
     <string name="error_register_empty_name">Inserire il nome</string>
     <string name="error_register_empty_surname">Inserire il cognome</string>
     <string name="error_register_existing_mail">E-mail già in uso</string>
+    <string name="invalid_mail_or_password">Credenziali errate</string>
+    <string name="error_empty_date">Inserire una data</string>
+    <string name="error_empty_description">Inserire una descrizione</string>
+    <string name="error_invalid_import">Inserire un importo valido</string>
+
+
+
     <string-array name="transaction_type_array">
+        <item>Stipendio</item>
+        <item>Tasse</item>
+        <item>Spesa</item>
+        <item>Entrate varie</item>
+        <item>Uscite varie</item>
+    </string-array>
+
+    <string-array name="searchTransaction_type_array">
+        <item>Tutte</item>
         <item>Stipendio</item>
         <item>Tasse</item>
         <item>Spesa</item>

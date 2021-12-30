@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,50 +12,51 @@
         android:id="@+id/editTextSignUpMail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/editTextSignUpPassword"
         android:hint="Username"
         android:inputType="textEmailAddress"
+        android:layout_centerInParent="true"
         android:padding="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:textColor="@color/black" />
     <EditText
         android:id="@+id/editTextSignUpPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/editTextSignUpMail"
-        app:layout_constraintBottom_toTopOf="@id/loginBtn"
         android:hint="Password"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/editTextSignUpMail"
         android:inputType="textPassword"
         android:padding="10dp"
         android:textColor="@color/black"  />
 
 
+    <Button
+        android:id="@+id/loginBtn"
+        style="@style/Base.Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/editTextSignUpPassword"
+        android:layout_gravity="end"
+        android:text="LOGIN"/>
 
     <Button
         android:id="@+id/signupBtn"
         style="@style/Base.Widget.AppCompat.Button.Colored"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/editTextSignUpPassword"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/loginBtn"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/loginBtn"
         android:layout_gravity="end"
         android:text="REGISTRATI"/>
-    <Button
-        android:id="@+id/loginBtn"
-        style="@style/Base.Widget.AppCompat.Button.Colored"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/editTextSignUpPassword"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/signupBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_gravity="end"
-        android:text="LOGIN"/>
 
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

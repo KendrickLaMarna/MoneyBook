@@ -16,23 +16,27 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.setPadding
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.home_fragment.*
-import kotlinx.android.synthetic.main.main_menu.*
+import java.util.*
+import kotlin.collections.ArrayList
+
+import android.app.DatePickerDialog
+import java.text.SimpleDateFormat
 
 
 class Home : Fragment() {
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
+    private lateinit var date_transaction: EditText
     private lateinit var spinner: Spinner
     private lateinit var table_transactions: TableLayout
     private lateinit var user_transactions: ArrayList<UserTransaction>
     private lateinit var addTransactionButton: Button
- //   private lateinit var bottomNavView: BottomNavigationView
+    private var myCalendar: Calendar = Calendar.getInstance()
+    private lateinit var date: DatePickerDialog.OnDateSetListener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
         // Inflate the layout for this fragment
@@ -44,17 +48,29 @@ class Home : Fragment() {
         //Initialize variables
         init()
 
-
-
+        //Display the calendar's popup when EditText of date is clicked
+        date_transaction!!.setOnClickListener{
+            this.context?.let { it1 ->
+                DatePickerDialog(
+                    it1,
+                    date,
+                    myCalendar[Calendar.YEAR],
+                    myCalendar[Calendar.MONTH],
+                    myCalendar[Calendar.DAY_OF_MONTH]
+                ).show()
+            }
+        }
         //User add a transaction by clicking the button "AGGIUNGI"
         addTransactionButton!!.setOnClickListener {
-            //TODO checkdata()
 
             //Hide keyboard
             activity?.let { it1 -> hideSoftKeyboard(it1) }
 
-            //Add transaction
-            addTransaction()
+            if(checkData()){
+                //Add transaction
+                addTransaction()
+            }
+
         }
     }
 
@@ -82,13 +98,19 @@ class Home : Fragment() {
             }
         }
 
-
+        date_transaction = view?.findViewById<View>(R.id.date_transaction) as EditText
         table_transactions = view?.findViewById<View>(R.id.tableResults) as TableLayout
         user_transactions = ArrayList<UserTransaction>()
         addTransactionButton = view?.findViewById<View>(R.id.addTransactionsBtn) as Button
 
 
-
+        //Init calendar's popup
+        date = DatePickerDialog.OnDateSetListener { view, year, month, day ->
+                myCalendar.set(Calendar.YEAR, year)
+                myCalendar.set(Calendar.MONTH, month)
+                myCalendar.set(Calendar.DAY_OF_MONTH, day)
+                updateLabel()
+            }
         //Get Users' transactions from Firebase and populates transactions' table for the first time
         getUserTransactionsFromDB()
 
@@ -116,10 +138,18 @@ class Home : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val t: GenericTypeIndicator<List<UserTransaction>> =
                     object : GenericTypeIndicator<List<UserTransaction>>() {}
-                user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
-                user_transactions.add(single_transaction.get(0))
-                database.child("users").child(auth.currentUser!!.uid).child("transactions").setValue(user_transactions)
-                calculateTotalBalance()
+                if(dataSnapshot.child("transactions").getValue(t) != null){
+                    user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
+                    user_transactions.add(single_transaction.get(0))
+                    database.child("users").child(auth.currentUser!!.uid).child("transactions").setValue(user_transactions)
+                    calculateTotalBalance()
+                }
+                else{
+                    user_transactions.add(single_transaction.get(0))
+                    database.child("users").child(auth.currentUser!!.uid).child("transactions").setValue(user_transactions)
+                    calculateTotalBalance()
+                }
+
 
 
             }
@@ -138,10 +168,11 @@ class Home : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val t: GenericTypeIndicator<List<UserTransaction>> =
                     object : GenericTypeIndicator<List<UserTransaction>>() {}
-                user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
-
-                //Insert user transactions in table
-                populateTableTransactions(user_transactions)
+                if(dataSnapshot.child("transactions").getValue(t) != null){
+                    user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
+                    //Insert user transactions in table
+                    populateTableTransactions(user_transactions)
+                }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -206,25 +237,33 @@ class Home : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val t: GenericTypeIndicator<List<UserTransaction>> =
                     object : GenericTypeIndicator<List<UserTransaction>>() {}
-                user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
-                for(transaction in user_transactions) run{
-                    when(transaction.type){
-                        "Stipendio" -> {
-                            entrate += transaction.import
-                            bilancio += transaction.import
-                        }
-                        "Entrate varie" -> {
-                            entrate += transaction.import
-                            bilancio += transaction.import
-                        }
-                        else -> {
-                            uscite += transaction.import
-                            bilancio -= transaction.import
+                if(dataSnapshot.child("transactions").getValue(t) != null){
+                    user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
+                    for(transaction in user_transactions) run{
+                        when(transaction.type){
+                            "Stipendio" -> {
+                                entrate += transaction.import
+                                bilancio += transaction.import
+                            }
+                            "Entrate varie" -> {
+                                entrate += transaction.import
+                                bilancio += transaction.import
+                            }
+                            else -> {
+                                uscite += transaction.import
+                                bilancio -= transaction.import
+                            }
                         }
                     }
+                    tvBilancio.text = "€" + bilancio.toString()
+                    tvEntrateUscite.text = "+ " + entrate.toString() + " | " + "- " + uscite.toString()
                 }
-                tvBilancio.text = "€" + bilancio.toString()
-                tvEntrateUscite.text = "+ " + entrate.toString() + " | " + "- " + uscite.toString()
+                //If user hasn't transactions associated, then set only balance and cash spent/received (0)
+                else{
+                    tvBilancio.text = "€" + bilancio.toString()
+                    tvEntrateUscite.text = "+ " + entrate.toString() + " | " + "- " + uscite.toString()
+                }
+
 
 
             }
@@ -247,6 +286,46 @@ class Home : Fragment() {
             )
         }
     }
+
+    private fun checkData(): Boolean{
+        val date = view?.findViewById<View>(R.id.date_transaction) as EditText
+        val description = view?.findViewById<View>(R.id.transaction) as EditText
+        val import = view?.findViewById<View>(R.id.import_transaction) as EditText
+        val type = view?.findViewById<View>(R.id.transaction_type_spinner) as Spinner
+        var result = true
+
+        if(date.text.toString().equals("")){
+            Toast.makeText(this.context, getString(R.string.error_empty_date), Toast.LENGTH_SHORT).show()
+            date.setError(getString(R.string.error_empty_date))
+            result = false
+        }
+        if(description.text.toString().equals("")){
+            Toast.makeText(this.context, getString(R.string.error_empty_description), Toast.LENGTH_SHORT).show()
+            description.setError(getString(R.string.error_empty_description))
+            result = false
+        }
+
+        if(!isNumeric(import.text.toString()) || import.text.toString().equals("")){
+            Toast.makeText(this.context, getString(R.string.error_invalid_import), Toast.LENGTH_SHORT).show()
+            import.setError(getString(R.string.error_invalid_import))
+            result = false
+        }
+
+
+        return result
+    }
+
+    private fun isNumeric(str: String) = str
+        .replace(".", "")
+        .all { it in '0'..'9' }
+
+    private fun updateLabel() {
+        val myFormat = "dd/MM/yyyy"
+        val dateFormat = SimpleDateFormat(myFormat, Locale.ITALY)
+        date_transaction.setText(dateFormat.format(myCalendar.getTime()))
+    }
+
+
 
 
 }
