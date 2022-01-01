@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,8 +10,9 @@
         android:id="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/editTextSurname"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:hint="Nome *"
         android:textColor="@color/black" />
 
@@ -19,8 +20,10 @@
         android:id="@+id/editTextSurname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/editTextName"
-        app:layout_constraintBottom_toTopOf="@id/editTextSignUpMail"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/editTextName"
         android:hint="Cognome *"
         android:textColor="@color/black" />
 
@@ -30,8 +33,10 @@
         android:id="@+id/editTextSignUpMail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/editTextSurname"
-        app:layout_constraintBottom_toTopOf="@id/confirmMail"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/editTextSurname"
         android:hint="E-mail *"
         android:inputType="textEmailAddress"
         android:textColor="@color/black" />
@@ -40,8 +45,10 @@
         android:id="@+id/confirmMail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/editTextSignUpMail"
-        app:layout_constraintBottom_toTopOf="@id/editTextSignUpPassword"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/editTextSignUpMail"
         android:hint="conferma E-mail *"
         android:inputType="textEmailAddress"
         android:textColor="@color/black" />
@@ -50,10 +57,11 @@
         android:id="@+id/editTextSignUpPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/confirmMail"
-        app:layout_constraintBottom_toTopOf="@id/confirmPassword"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/confirmMail"
         android:hint="Password *"
-        android:layout_marginTop="2dp"
         android:inputType="textPassword"
         android:textColor="@color/black"  />
 
@@ -61,8 +69,10 @@
         android:id="@+id/confirmPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/editTextSignUpPassword"
-        app:layout_constraintBottom_toTopOf="@id/signupButton"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/editTextSignUpPassword"
         android:hint="Conferma password *"
         android:inputType="textPassword"
         android:textColor="@color/black"  />
@@ -74,11 +84,11 @@
         style="@style/Base.Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/confirmPassword"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_gravity="end"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/confirmPassword"
+        android:layout_centerHorizontal="true"
         android:text="REGISTRATI"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

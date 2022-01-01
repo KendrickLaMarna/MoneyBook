@@ -12,6 +12,7 @@
     <string name="error_empty_date">Inserire una data</string>
     <string name="error_empty_description">Inserire una descrizione</string>
     <string name="error_invalid_import">Inserire un importo valido</string>
+    <string name="error_existing_transaction">Transazione già esistente</string>
 
 
 

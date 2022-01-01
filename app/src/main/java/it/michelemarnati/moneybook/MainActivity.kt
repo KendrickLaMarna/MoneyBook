@@ -15,7 +15,10 @@ import android.content.Intent
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -49,6 +52,11 @@ class MainActivity : AppCompatActivity() {
 
         loginButton!!.setOnClickListener() {
             hideSoftKeyboard(this@MainActivity)
+
+            //Load circle progress bar
+            val pb = findViewById(R.id.progressBar) as ProgressBar
+            pb.visibility = VISIBLE
+
             if(checkData()){
                 auth.signInWithEmailAndPassword(editTextEmail!!.text.toString(), editTextPsw!!.text.toString())
                     .addOnCompleteListener(this) { task ->
@@ -57,12 +65,15 @@ class MainActivity : AppCompatActivity() {
                             Log.d(TAG, "signInWithEmail:success")
                             val mainMenuWindowIntent = Intent(applicationContext, MainMenu::class.java)
                             startActivity(mainMenuWindowIntent)
+                            pb.visibility = GONE
                             finish()
                         } else {
                             // Sign in failed
                             Log.w(TAG, "signInWithEmail:failure", task.exception)
                             editTextEmail!!.setError(getString(R.string.invalid_mail_or_password))
                             editTextPsw!!.setError(getString(R.string.invalid_mail_or_password))
+                            pb.visibility = GONE
+                            Toast.makeText(this@MainActivity, getString(R.string.invalid_mail_or_password), Toast.LENGTH_SHORT).show()
 
                         }
                     }
@@ -78,15 +89,18 @@ class MainActivity : AppCompatActivity() {
         if(!isValidEmail(editTextEmail!!.text.toString()) && editTextPsw!!.text.toString().equals("")){
             editTextEmail!!.setError(getString(R.string.error_invalid_mail))
             editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
+            Toast.makeText(this@MainActivity, getString(R.string.invalid_mail_or_password), Toast.LENGTH_SHORT).show()
             result = false
         }
 
         else if(!isValidEmail(editTextEmail!!.text.toString())){
             editTextEmail!!.setError(getString(R.string.error_invalid_mail))
+            Toast.makeText(this@MainActivity, getString(R.string.error_invalid_mail), Toast.LENGTH_SHORT).show()
             result = false
         }
         else if (editTextPsw!!.text.toString().equals("")){
             editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
+            Toast.makeText(this@MainActivity, getString(R.string.error_register_empty_psw), Toast.LENGTH_SHORT).show()
             result = false
         }
 

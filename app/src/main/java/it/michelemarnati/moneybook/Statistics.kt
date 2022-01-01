@@ -1,5 +1,6 @@
 package it.michelemarnati.moneybook
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,9 +14,11 @@ import android.content.DialogInterface
 import android.os.Build
 import android.text.Editable
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import java.util.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.toColor
 import androidx.core.view.setPadding
 import com.google.firebase.auth.FirebaseAuth
@@ -35,6 +38,7 @@ class Statistics: Fragment() {
     private lateinit var spinner: Spinner
     private lateinit var searchButton: Button
     private lateinit var table_transactions: TableLayout
+    private lateinit var pb: ProgressBar
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
 
@@ -71,7 +75,7 @@ class Statistics: Fragment() {
         data_statistiche.setOnClickListener {
             var builder: MonthPickerDialog.Builder  = MonthPickerDialog.Builder(this.context,
                 { i: Int, i1: Int ->
-                    data_statistiche.text = Editable.Factory.getInstance().newEditable(((i + 1).toString() + "/" + i1))
+                    data_statistiche.text = Editable.Factory.getInstance().newEditable(if((i + 1) < 10){"0" + (i + 1).toString() + "/" + i1} else (i + 1).toString() + "/" + i1)
                 }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH));
 
             builder.setActivatedMonth(myCalendar.get(Calendar.MONTH))
@@ -97,10 +101,22 @@ class Statistics: Fragment() {
             }
         }
 
+        //Circle progress bar
+        pb = view?.findViewById(R.id.progressBar) as ProgressBar
+
         searchButton!!.setOnClickListener {
+
+            //Hide keyboard
+            activity?.let { it1 -> hideSoftKeyboard(it1) }
+
+            //Load circle progress bar
+            pb.visibility = View.VISIBLE
             if(checkData()){
                 table_transactions.removeAllViews()
                 getUserTransactionsFromDB(data_statistiche.text.toString(), spinner.selectedItem.toString())
+            }
+            else{
+                pb.visibility = View.GONE
             }
         }
 
@@ -128,62 +144,64 @@ class Statistics: Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val t: GenericTypeIndicator<List<UserTransaction>> =
                     object : GenericTypeIndicator<List<UserTransaction>>() {}
-                user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
 
-                if(type.equals("Tutte")){
-                    for(transaction in user_transactions) run{
-                        val dateSplit = transaction.date.split("/")
-                        val ds = dateSplit[1] + "/" + dateSplit[2]
-                        if(ds.equals(dataStats)){
-                            user_monthTransactions.add(transaction)
-                            when(transaction.type){
-                                "Stipendio" -> {
-                                    entrate += transaction.import
-                                    bilancio += transaction.import
-                                }
-                                "Entrate varie" -> {
-                                    entrate += transaction.import
-                                    bilancio += transaction.import
-                                }
-                                else -> {
-                                    uscite += transaction.import
-                                    bilancio -= transaction.import
+                if(dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction> != null){
+                    user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
+
+                    if(type.equals("Tutte")){
+                        for(transaction in user_transactions) run{
+                            val dateSplit = transaction.date.split("/")
+                            val ds = dateSplit[1] + "/" + dateSplit[2]
+                            if(ds.equals(dataStats)){
+                                user_monthTransactions.add(transaction)
+                                when(transaction.type){
+                                    "Stipendio" -> {
+                                        entrate += transaction.import
+                                        bilancio += transaction.import
+                                    }
+                                    "Entrate varie" -> {
+                                        entrate += transaction.import
+                                        bilancio += transaction.import
+                                    }
+                                    else -> {
+                                        uscite += transaction.import
+                                        bilancio -= transaction.import
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                else{
-                    for(transaction in user_transactions) run{
-                        val dateSplit = transaction.date.split("/")
-                        val ds = dateSplit[1] + "/" + dateSplit[2]
+                    else{
+                        for(transaction in user_transactions) run{
+                            val dateSplit = transaction.date.split("/")
+                            val ds = dateSplit[1] + "/" + dateSplit[2]
 
-                        if(ds.equals(dataStats) && transaction.type.equals(type)){
-                            user_monthTransactions.add(transaction)
-                            when(transaction.type){
-                                "Stipendio" -> {
-                                    entrate += transaction.import
-                                    bilancio += transaction.import
-                                }
-                                "Entrate varie" -> {
-                                    entrate += transaction.import
-                                    bilancio += transaction.import
-                                }
-                                else -> {
-                                    uscite += transaction.import
-                                    bilancio -= transaction.import
+                            if(ds.equals(dataStats) && transaction.type.equals(type)){
+                                user_monthTransactions.add(transaction)
+                                when(transaction.type){
+                                    "Stipendio" -> {
+                                        entrate += transaction.import
+                                        bilancio += transaction.import
+                                    }
+                                    "Entrate varie" -> {
+                                        entrate += transaction.import
+                                        bilancio += transaction.import
+                                    }
+                                    else -> {
+                                        uscite += transaction.import
+                                        bilancio -= transaction.import
+                                    }
                                 }
                             }
                         }
-                    }
 //                tvBilancio.text = "€" + bilancio.toString()
 //                tvEntrateUscite.text = "+ " + entrate.toString() + " | " + "- " + uscite.toString()
+                    }
+                    populateTableTransactions(user_monthTransactions)
                 }
-                populateTableTransactions(user_monthTransactions)
-
-
-
+                pb.visibility = View.GONE
             }
+
 
             override fun onCancelled(databaseError: DatabaseError) {
                 Log.e(ContentValues.TAG, "onCancelled", databaseError.toException())
@@ -230,7 +248,21 @@ class Statistics: Fragment() {
             trow.addView(description)
             trow.addView(import)
             trow.addView(type)
+            trow.weightSum = 4f
             table_transactions.addView(trow)
+        }
+    }
+
+    //Function that hides Keyboard when called
+    fun hideSoftKeyboard(activity: Activity) {
+        val inputMethodManager: InputMethodManager = activity.getSystemService(
+            AppCompatActivity.INPUT_METHOD_SERVICE
+        ) as InputMethodManager
+        if (inputMethodManager.isAcceptingText()) {
+            inputMethodManager.hideSoftInputFromWindow(
+                activity.currentFocus!!.windowToken,
+                0
+            )
         }
     }
 

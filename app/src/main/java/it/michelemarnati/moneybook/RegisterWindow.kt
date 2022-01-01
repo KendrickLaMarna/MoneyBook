@@ -89,15 +89,11 @@ class RegisterWindow : AppCompatActivity(){
                         if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success")
-                            val transactions: ArrayList<UserTransaction> = ArrayList<UserTransaction>()
-                            val transaction = UserTransaction()
-                            transactions.add(transaction)
                             val user = User(
                                 editTextName!!.text.toString(),
                                 editTextSurname!!.text.toString(),
                                 editTextEmail!!.text.toString(),
-                                editTextPsw!!.text.toString(),
-                                transactions
+                                editTextPsw!!.text.toString()
                             )
 
                             //Insert user data in Firebase database

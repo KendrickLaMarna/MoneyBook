@@ -37,6 +37,7 @@ class Home : Fragment() {
     private lateinit var addTransactionButton: Button
     private var myCalendar: Calendar = Calendar.getInstance()
     private lateinit var date: DatePickerDialog.OnDateSetListener
+    private lateinit var pb: ProgressBar
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
         // Inflate the layout for this fragment
@@ -66,9 +67,13 @@ class Home : Fragment() {
             //Hide keyboard
             activity?.let { it1 -> hideSoftKeyboard(it1) }
 
+
+            pb.visibility = View.VISIBLE
             if(checkData()){
-                //Add transaction
-                addTransaction()
+                checkExistingTransaction()
+            }
+            else{
+                pb.visibility = View.GONE
             }
 
         }
@@ -103,6 +108,9 @@ class Home : Fragment() {
         user_transactions = ArrayList<UserTransaction>()
         addTransactionButton = view?.findViewById<View>(R.id.addTransactionsBtn) as Button
 
+        //Load circle progress bar
+        pb = view?.findViewById(R.id.progressBar) as ProgressBar
+
 
         //Init calendar's popup
         date = DatePickerDialog.OnDateSetListener { view, year, month, day ->
@@ -129,8 +137,8 @@ class Home : Fragment() {
         val single_transaction = ArrayList<UserTransaction>()
 
         single_transaction.add(UserTransaction(date.text.toString(), description.text.toString(), import.text.toString().toFloat(), type.selectedItem.toString()))
-        //Insert user transaction in table
-        populateTableTransactions(single_transaction)
+//        //Insert user transaction in table
+//        populateTableTransactions(single_transaction)
 
         //Update data in Firebase database
         database.child("users").child(auth.currentUser!!.uid).addListenerForSingleValueEvent(object :
@@ -141,12 +149,22 @@ class Home : Fragment() {
                 if(dataSnapshot.child("transactions").getValue(t) != null){
                     user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
                     user_transactions.add(single_transaction.get(0))
-                    database.child("users").child(auth.currentUser!!.uid).child("transactions").setValue(user_transactions)
+
+                    //Order user_transactions by date
+                    val format = SimpleDateFormat("dd/MM/yyyy")
+                    var user_transactons_ordered = ArrayList<UserTransaction>(user_transactions.sortedByDescending {format.parse(it.date) })
+                    database.child("users").child(auth.currentUser!!.uid).child("transactions").setValue(user_transactons_ordered)
+
+                    //Insert user transaction in table
+                    populateTableTransactions(user_transactons_ordered)
                     calculateTotalBalance()
                 }
                 else{
-                    user_transactions.add(single_transaction.get(0))
-                    database.child("users").child(auth.currentUser!!.uid).child("transactions").setValue(user_transactions)
+                    var user_transactons_ordered = ArrayList<UserTransaction>()
+                    user_transactons_ordered.add(single_transaction.get(0))
+                    database.child("users").child(auth.currentUser!!.uid).child("transactions").setValue(user_transactons_ordered)
+                    //Insert user transaction in table
+                    populateTableTransactions(user_transactons_ordered)
                     calculateTotalBalance()
                 }
 
@@ -184,6 +202,7 @@ class Home : Fragment() {
 
 
     fun populateTableTransactions(user_transactions: ArrayList<UserTransaction>){
+        table_transactions.removeAllViews()
         for(transaction in user_transactions) run {
             val date = TextView(this.context)
             date.layoutParams = TableRow.LayoutParams(
@@ -274,7 +293,7 @@ class Home : Fragment() {
         })
     }
 
-    //function that hides Keyboard when called
+    //Function that hides Keyboard when called
     fun hideSoftKeyboard(activity: Activity) {
         val inputMethodManager: InputMethodManager = activity.getSystemService(
             AppCompatActivity.INPUT_METHOD_SERVICE
@@ -315,6 +334,50 @@ class Home : Fragment() {
         return result
     }
 
+    //Function that checks if the transaction that user is adding already exists
+    private fun checkExistingTransaction(){
+        val date = view?.findViewById<View>(R.id.date_transaction) as EditText
+        val description = view?.findViewById<View>(R.id.transaction) as EditText
+        val import = view?.findViewById<View>(R.id.import_transaction) as EditText
+        val type = view?.findViewById<View>(R.id.transaction_type_spinner) as Spinner
+        val user_trs: UserTransaction = UserTransaction(
+            date.text.toString(), description.text.toString(), import.text.toString().toFloat(), type.selectedItem.toString())
+
+        database.child("users").child(auth.currentUser!!.uid).addListenerForSingleValueEvent(object :
+            ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val t: GenericTypeIndicator<List<UserTransaction>> =
+                    object : GenericTypeIndicator<List<UserTransaction>>() {}
+                if(dataSnapshot.child("transactions").getValue(t) != null){
+                    user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
+
+                    if(user_transactions.find {
+                        it.date.equals(user_trs.date)  &&
+                        it.description.equals(user_trs.description.toLowerCase().trim()) &&
+                        it.import == user_trs.import &&
+                        it.type.equals(user_trs.type)
+                    } == null) {
+
+                        //Add transaction
+                        addTransaction()
+                    }
+                    else{
+                        Toast.makeText(context, getString(R.string.error_existing_transaction), Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else{
+                    //Add transaction
+                    addTransaction()
+                }
+                pb.visibility = View.GONE
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(ContentValues.TAG, "onCancelled", databaseError.toException())
+            }
+        })
+    }
+
     private fun isNumeric(str: String) = str
         .replace(".", "")
         .all { it in '0'..'9' }
@@ -324,6 +387,8 @@ class Home : Fragment() {
         val dateFormat = SimpleDateFormat(myFormat, Locale.ITALY)
         date_transaction.setText(dateFormat.format(myCalendar.getTime()))
     }
+
+
 
 
 

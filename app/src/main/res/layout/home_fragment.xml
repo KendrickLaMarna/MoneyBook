@@ -49,6 +49,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_below="@id/entrateUscite">
 
         <EditText
@@ -78,6 +80,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_below="@id/form1">
 
 
@@ -103,6 +107,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/form2"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_alignParentRight="true"
         android:text="AGGIUNGI"/>
 
@@ -113,8 +119,9 @@
         android:text="Transazioni:"
         android:textSize = "20dp"
         android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_below="@id/addTransactionsBtn"
-        android:background="@drawable/textlines"
         android:textColor="@color/black"
         android:textStyle="bold">
     </TextView>
@@ -130,13 +137,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/barrier"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_marginTop="5dp"
         android:layout_weight="2">
 
         <TableLayout
             android:id="@+id/tableResults"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></TableLayout>
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_height="wrap_content">
+
+        </TableLayout>
     </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"/>
 
 </RelativeLayout>
