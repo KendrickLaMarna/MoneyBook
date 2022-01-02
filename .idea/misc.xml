@@ -5,15 +5,18 @@
       <map>
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.13072916666666667" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.13072916666666667" />
+        <entry key="app/src/main/res/drawable/tab_color.xml" value="0.13072916666666667" />
+        <entry key="app/src/main/res/drawable/text_color.xml" value="0.15208333333333332" />
         <entry key="app/src/main/res/drawable/textlines.xml" value="0.15208333333333332" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/confirm_email_code.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/home_fragment.xml" value="0.10306874515236093" />
+        <entry key="app/src/main/res/layout/home_fragment.xml" value="0.15480869408924494" />
         <entry key="app/src/main/res/layout/main_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout/register_window.xml" value="0.165" />
         <entry key="app/src/main/res/layout/statistics.xml" value="0.11458333333333333" />
         <entry key="app/src/main/res/layout/statistics_fragment.xml" value="0.21195652173913043" />
         <entry key="app/src/main/res/layout/user_settings.xml" value="0.11458333333333333" />
+        <entry key="app/src/main/res/layout/user_settings_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/user_transactions.xml" value="0.121875" />
         <entry key="app/src/main/res/menu/bottom_navigation_main.xml" value="0.1359375" />
       </map>

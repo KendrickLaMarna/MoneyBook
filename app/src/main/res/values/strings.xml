@@ -13,6 +13,7 @@
     <string name="error_empty_description">Inserire una descrizione</string>
     <string name="error_invalid_import">Inserire un importo valido</string>
     <string name="error_existing_transaction">Transazione già esistente</string>
+    <string name="error_empty_name_surname">I campi nome e cognome non possono essere vuoti</string>
 
 
 

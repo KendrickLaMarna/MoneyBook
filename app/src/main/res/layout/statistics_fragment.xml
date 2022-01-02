@@ -42,14 +42,52 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/entrate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/form"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="70dp"
+        android:text="Entrate:"
+        android:textColor="@color/green"
+        android:textSize="15dp">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/uscite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Uscite:"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_below="@id/entrate"
+        android:textColor="@color/red"
+        android:textSize="15dp">
+    </TextView>
+
+    <TextView
+        android:id="@+id/totale"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/uscite"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
+        android:text="Totale:"
+        android:textColor="@color/black"
+        android:textSize="15dp">
+
+    </TextView>
+
+    <TextView
         android:id="@+id/txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Transazioni:"
         android:textSize = "20dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
-        android:layout_below="@id/form"
+        android:layout_below="@id/totale"
         android:textColor="@color/black"
         android:textStyle="bold">
     </TextView>

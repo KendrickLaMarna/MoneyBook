@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import android.app.Activity
+import android.content.DialogInterface
 
 import android.content.Intent
 import android.os.Handler
@@ -31,6 +32,10 @@ class ConfirmEmailCode: AppCompatActivity() {
                 AlertDialog.Builder(this@ConfirmEmailCode)
                     .setTitle("Codice corretto")
                     .setMessage("Hai inserito il codice correttamente!")
+                    .setPositiveButton("OK",
+                    DialogInterface.OnClickListener { dialog, whichButton ->
+                        dialog.dismiss()
+                        finish()})
                     .show();
             }
             else {
@@ -41,9 +46,7 @@ class ConfirmEmailCode: AppCompatActivity() {
                     .setMessage("Hai inserito il codice sbagliato.")
                     .show();
             }
-            Handler().postDelayed({
-                finish()
-            }, 3000)
+
 
 
         }

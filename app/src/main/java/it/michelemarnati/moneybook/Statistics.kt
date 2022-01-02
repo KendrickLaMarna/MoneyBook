@@ -112,7 +112,8 @@ class Statistics: Fragment() {
             //Load circle progress bar
             pb.visibility = View.VISIBLE
             if(checkData()){
-                table_transactions.removeAllViews()
+                refresh()
+
                 getUserTransactionsFromDB(data_statistiche.text.toString(), spinner.selectedItem.toString())
             }
             else{
@@ -139,6 +140,10 @@ class Statistics: Fragment() {
         var uscite = 0f
         var bilancio = 0f
         var user_monthTransactions = ArrayList<UserTransaction>()
+        var tvEntrate = view?.findViewById(R.id.entrate) as TextView
+        var tvUscite = view?.findViewById(R.id.uscite) as TextView
+        var tvTotale = view?.findViewById(R.id.totale) as TextView
+
         database.child("users").child(auth.currentUser!!.uid).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -194,9 +199,10 @@ class Statistics: Fragment() {
                                 }
                             }
                         }
-//                tvBilancio.text = "€" + bilancio.toString()
-//                tvEntrateUscite.text = "+ " + entrate.toString() + " | " + "- " + uscite.toString()
                     }
+                    tvTotale.text = tvTotale.text.toString() + " €" + bilancio.toString()
+                    tvEntrate.text = tvEntrate.text.toString() + " +" + entrate.toString()
+                    tvUscite.text = tvUscite.text.toString() + " -" + uscite.toString()
                     populateTableTransactions(user_monthTransactions)
                 }
                 pb.visibility = View.GONE
@@ -253,6 +259,16 @@ class Statistics: Fragment() {
         }
     }
 
+
+    private fun refresh(){
+        var tvEntrate = view?.findViewById(R.id.entrate) as TextView
+        var tvUscite = view?.findViewById(R.id.uscite) as TextView
+        var tvTotale = view?.findViewById(R.id.totale) as TextView
+        tvTotale.text = "Totale:"
+        tvEntrate.text = "Entrate:"
+        tvUscite.text = "Uscite:"
+        table_transactions.removeAllViews()
+    }
     //Function that hides Keyboard when called
     fun hideSoftKeyboard(activity: Activity) {
         val inputMethodManager: InputMethodManager = activity.getSystemService(

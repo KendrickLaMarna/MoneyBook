@@ -12,6 +12,7 @@ import java.util.*
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import android.content.Intent
+import android.text.Editable
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
@@ -73,14 +74,26 @@ class MainActivity : AppCompatActivity() {
                             editTextEmail!!.setError(getString(R.string.invalid_mail_or_password))
                             editTextPsw!!.setError(getString(R.string.invalid_mail_or_password))
                             pb.visibility = GONE
-                            Toast.makeText(this@MainActivity, getString(R.string.invalid_mail_or_password), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, getString(R.string.invalid_mail_or_password), Toast.LENGTH_SHORT).show()
 
                         }
                     }
             }
+            else{
+                pb.visibility = GONE
+            }
 
         }
 
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        editTextEmail!!.setError(null)
+        editTextEmail!!.text = Editable.Factory.getInstance().newEditable("")
+        editTextPsw!!.setError(null)
+        editTextPsw!!.text = Editable.Factory.getInstance().newEditable("")
     }
 
     fun checkData(): Boolean{

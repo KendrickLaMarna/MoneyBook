@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".MainMenu"
-    android:weightSum="3">
+    tools:context=".MainMenu">
 
 
 
@@ -23,10 +22,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:itemBackground="@color/dark_blu"
-        app:itemIconTint="@color/white"
-        app:itemTextColor="@color/white"
-        app:menu="@menu/bottom_navigation_main" />
+        android:layout_gravity="bottom"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:background="?android:attr/windowBackground"
+        android:fitsSystemWindows="true"
+        app:itemIconTint="@drawable/tab_color"
+        app:itemTextColor="@drawable/tab_color"
+        app:labelVisibilityMode="labeled"
+        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
+        app:menu="@menu/bottom_navigation_main"/>
 
 
 </RelativeLayout>

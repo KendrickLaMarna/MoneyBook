@@ -92,8 +92,7 @@ class RegisterWindow : AppCompatActivity(){
                             val user = User(
                                 editTextName!!.text.toString(),
                                 editTextSurname!!.text.toString(),
-                                editTextEmail!!.text.toString(),
-                                editTextPsw!!.text.toString()
+                                editTextEmail!!.text.toString()
                             )
 
                             //Insert user data in Firebase database
@@ -142,129 +141,125 @@ class RegisterWindow : AppCompatActivity(){
     }
 
     private fun checkData(){
-        var result = false
         var checkOk = 0
         var email = editTextEmail!!.text.toString()
-        //check if user email already exists
-        auth.fetchSignInMethodsForEmail(email)
-            .addOnCompleteListener(OnCompleteListener<SignInMethodQueryResult> { task ->
-                val isNewUser = task.result.signInMethods!!.isEmpty()
+        if(isValidEmail(email)) {
 
-                if(isNewUser
-                    && isValidEmail(editTextEmail!!.text.toString())
-                    && editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString())
-                    && editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString())
-                    && !(editTextPsw!!.text.toString().equals(""))
-                    && !(editTextName!!.text.toString().equals(""))
-                    && !(editTextSurname!!.text.toString().equals(""))){
-                    result = true
-                    sendEmail()
-                    Handler().postDelayed({
-                        val confirmCodeWindowIntent = Intent(applicationContext, ConfirmEmailCode::class.java)
-                        try{
-                            confirmCodeWindowIntent.putExtra("emailCode", alphanumeric)
-                            startActivityForResult(confirmCodeWindowIntent, LAUNCH_CONFIRM_EMAIL_CODE)
-                        }catch(e: Exception){
-                            e.printStackTrace()
+            //check if user email already exists
+            auth.fetchSignInMethodsForEmail(email)
+                .addOnCompleteListener(OnCompleteListener<SignInMethodQueryResult> { task ->
+                    val isNewUser = task.result.signInMethods!!.isEmpty()
 
+                    if (isNewUser
+                        && isValidEmail(editTextEmail!!.text.toString())
+                        && editTextEmail!!.text.toString()
+                            .equals(editTextConfirmMail!!.text.toString())
+                        && editTextPsw!!.text.toString()
+                            .equals(editTextConfirmPsw!!.text.toString())
+                        && !(editTextPsw!!.text.toString().equals(""))
+                        && !(editTextName!!.text.toString().equals(""))
+                        && !(editTextSurname!!.text.toString().equals(""))
+                    ) {
+                        sendEmail()
+                        Handler().postDelayed({
+                            val confirmCodeWindowIntent =
+                                Intent(applicationContext, ConfirmEmailCode::class.java)
+                            try {
+                                confirmCodeWindowIntent.putExtra("emailCode", alphanumeric)
+                                startActivityForResult(
+                                    confirmCodeWindowIntent,
+                                    LAUNCH_CONFIRM_EMAIL_CODE
+                                )
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+
+                            }
+                        }, 2000)
+                    } else {
+                        if (!isNewUser) {
+                            editTextEmail!!.setError(getString(R.string.error_register_existing_mail))
+                            editTextConfirmMail!!.setError(getString(R.string.error_register_existing_mail))
+                            Toast.makeText(this, getString(R.string.error_register_existing_mail), Toast.LENGTH_SHORT).show()
+                        } else if (!(editTextEmail!!.text.toString()
+                                .equals(editTextConfirmMail!!.text.toString()))
+                        ) {
+                            editTextEmail!!.setError(getString(R.string.error_register_copy_mail))
+                            editTextConfirmMail!!.setError(getString(R.string.error_register_copy_mail))
+                            Toast.makeText(this, getString(R.string.error_register_copy_mail), Toast.LENGTH_SHORT).show()
+                        } else if (!isValidEmail(editTextEmail!!.text.toString())) {
+                            editTextEmail!!.setError(getString(R.string.error_invalid_mail))
+                            editTextConfirmMail!!.setError(getString(R.string.error_invalid_mail))
+                            Toast.makeText(this, getString(R.string.error_invalid_mail), Toast.LENGTH_SHORT).show()
                         }
-                    }, 2000)
-                }
-                else{
-                    if(!isNewUser){
-                        editTextEmail!!.setError(getString(R.string.error_register_existing_mail))
-                        editTextConfirmMail!!.setError(getString(R.string.error_register_existing_mail))
-                        result = false
-                    }
-                    else if(!(editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString()))){
-                        editTextEmail!!.setError(getString(R.string.error_register_copy_mail))
-                        editTextConfirmMail!!.setError(getString(R.string.error_register_copy_mail))
-                        result = false
-                    }
-                    else if(!isValidEmail(editTextEmail!!.text.toString())){
-                        editTextEmail!!.setError(getString(R.string.error_invalid_mail))
-                        editTextConfirmMail!!.setError(getString(R.string.error_invalid_mail))
-                        result = false
-                    }
-                    if(!(editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString()))){
-                        editTextPsw!!.setError(getString(R.string.error_register_copy_psw))
-                        editTextConfirmPsw!!.setError(getString(R.string.error_register_copy_psw))
-                        result = false
-                    } else if(editTextPsw!!.text.toString().equals("")){
-                        editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
-                        editTextConfirmPsw!!.setError(getString(R.string.error_register_empty_psw))
-                        result = false;
-                    } else if(editTextPsw!!.text.toString().length < 5){
-                        editTextPsw!!.setError(getString(R.string.error_register_short_psw))
-                        editTextConfirmPsw!!.setError(getString(R.string.error_register_short_psw))
-                        result = false
-                    }
-                    if(editTextName!!.text.toString().equals("")){
-                        editTextName!!.setError(getString(R.string.error_register_empty_name))
-                        result = false
-                    }
+                        if (!(editTextPsw!!.text.toString()
+                                .equals(editTextConfirmPsw!!.text.toString()))
+                        ) {
+                            editTextPsw!!.setError(getString(R.string.error_register_copy_psw))
+                            editTextConfirmPsw!!.setError(getString(R.string.error_register_copy_psw))
+                            Toast.makeText(this, getString(R.string.error_register_copy_psw), Toast.LENGTH_SHORT).show()
+                        } else if (editTextPsw!!.text.toString().equals("")) {
+                            editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
+                            editTextConfirmPsw!!.setError(getString(R.string.error_register_empty_psw))
+                            Toast.makeText(this, getString(R.string.error_register_empty_psw), Toast.LENGTH_SHORT).show()
+                        } else if (editTextPsw!!.text.toString().length < 5) {
+                            editTextPsw!!.setError(getString(R.string.error_register_short_psw))
+                            editTextConfirmPsw!!.setError(getString(R.string.error_register_short_psw))
+                            Toast.makeText(this, getString(R.string.error_register_short_psw), Toast.LENGTH_SHORT).show()
+                        }
+                        if (editTextName!!.text.toString().equals("")) {
+                            editTextName!!.setError(getString(R.string.error_register_empty_name))
+                            Toast.makeText(this, getString(R.string.error_register_empty_name), Toast.LENGTH_SHORT).show()
+                        }
 
-                    if(editTextSurname!!.text.toString().equals("")){
-                        editTextSurname!!.setError(getString(R.string.error_register_empty_surname))
-                        result = false
+                        if (editTextSurname!!.text.toString().equals("")) {
+                            editTextSurname!!.setError(getString(R.string.error_register_empty_surname))
+                            Toast.makeText(this, getString(R.string.error_register_empty_surname), Toast.LENGTH_SHORT).show()
+                        }
                     }
+                })
+                .addOnFailureListener { exception ->
+                    Log.e(TAG, "Error getting sign in methods for user", exception)
                 }
-            })
-            .addOnFailureListener { exception ->
-                Log.e(TAG, "Error getting sign in methods for user", exception)
+        }
+        else{
+            if (!(editTextEmail!!.text.toString()
+                    .equals(editTextConfirmMail!!.text.toString()))
+            ) {
+                editTextEmail!!.setError(getString(R.string.error_register_copy_mail))
+                editTextConfirmMail!!.setError(getString(R.string.error_register_copy_mail))
+                Toast.makeText(this, getString(R.string.error_register_copy_mail), Toast.LENGTH_SHORT).show()
+            } else if (!isValidEmail(editTextEmail!!.text.toString())) {
+                editTextEmail!!.setError(getString(R.string.error_invalid_mail))
+                editTextConfirmMail!!.setError(getString(R.string.error_invalid_mail))
+                Toast.makeText(this, getString(R.string.error_invalid_mail), Toast.LENGTH_SHORT).show()
+            }
+            if (!(editTextPsw!!.text.toString()
+                    .equals(editTextConfirmPsw!!.text.toString()))
+            ) {
+                editTextPsw!!.setError(getString(R.string.error_register_copy_psw))
+                editTextConfirmPsw!!.setError(getString(R.string.error_register_copy_psw))
+                Toast.makeText(this, getString(R.string.error_register_copy_psw), Toast.LENGTH_SHORT).show()
+            } else if (editTextPsw!!.text.toString().equals("")) {
+                editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
+                editTextConfirmPsw!!.setError(getString(R.string.error_register_empty_psw))
+                Toast.makeText(this, getString(R.string.error_register_empty_psw), Toast.LENGTH_SHORT).show()
+            } else if (editTextPsw!!.text.toString().length < 5) {
+                editTextPsw!!.setError(getString(R.string.error_register_short_psw))
+                editTextConfirmPsw!!.setError(getString(R.string.error_register_short_psw))
+                Toast.makeText(this, getString(R.string.error_register_short_psw), Toast.LENGTH_SHORT).show()
+            }
+            if (editTextName!!.text.toString().equals("")) {
+                editTextName!!.setError(getString(R.string.error_register_empty_name))
+                Toast.makeText(this, getString(R.string.error_register_empty_name), Toast.LENGTH_SHORT).show()
+            }
+
+            if (editTextSurname!!.text.toString().equals("")) {
+                editTextSurname!!.setError(getString(R.string.error_register_empty_surname))
+                Toast.makeText(this, getString(R.string.error_register_empty_surname), Toast.LENGTH_SHORT).show()
             }
 
 
-//
-//        if(newUser
-//            && isValidEmail(editTextEmail!!.text.toString())
-//            && editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString())
-//            && editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString())
-//            && !(editTextPsw!!.text.toString().equals(""))
-//            && !(editTextName!!.text.toString().equals(""))
-//            && !(editTextSurname!!.text.toString().equals(""))){
-//            result = true
-//        }
-//        else{
-//            if(!newUser){
-//                editTextEmail!!.setError(getString(R.string.error_register_existing_mail))
-//                editTextConfirmMail!!.setError(getString(R.string.error_register_existing_mail))
-//                result = false
-//            }
-//            if(!(editTextEmail!!.text.toString().equals(editTextConfirmMail!!.text.toString()))){
-//                editTextEmail!!.setError(getString(R.string.error_register_copy_mail))
-//                editTextConfirmMail!!.setError(getString(R.string.error_register_copy_mail))
-//                result = false
-//            }
-//            if(!isValidEmail(editTextEmail!!.text.toString())){
-//                editTextEmail!!.setError(getString(R.string.error_invalid_mail))
-//                editTextConfirmMail!!.setError(getString(R.string.error_invalid_mail))
-//                result = false
-//            }
-//            if(!(editTextPsw!!.text.toString().equals(editTextConfirmPsw!!.text.toString()))){
-//                editTextPsw!!.setError(getString(R.string.error_register_copy_psw))
-//                editTextConfirmPsw!!.setError(getString(R.string.error_register_copy_psw))
-//                result = false
-//            } else if(editTextPsw!!.text.toString().equals("")){
-//                editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
-//                editTextConfirmPsw!!.setError(getString(R.string.error_register_empty_psw))
-//                result = false;
-//            } else if(editTextPsw!!.text.toString().length < 5){
-//                editTextPsw!!.setError(getString(R.string.error_register_short_psw))
-//                editTextConfirmPsw!!.setError(getString(R.string.error_register_short_psw))
-//                result = false
-//            }
-//            if(editTextName!!.text.toString().equals("")){
-//                editTextName!!.setError(getString(R.string.error_register_empty_name))
-//                result = false
-//            }
-//
-//            if(editTextSurname!!.text.toString().equals("")){
-//                editTextSurname!!.setError(getString(R.string.error_register_empty_surname))
-//                result = false
-//            }
-//        }
-//        return result
+        }
 
     }
 

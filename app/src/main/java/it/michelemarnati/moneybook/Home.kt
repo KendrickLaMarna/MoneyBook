@@ -80,6 +80,10 @@ class Home : Fragment() {
     }
 
     fun init(){
+        //Load circle progress bar
+        pb = view?.findViewById(R.id.progressBar) as ProgressBar
+        pb.visibility = View.VISIBLE
+
         val view = view
         //get the Firebase Database
         database = FirebaseDatabase.getInstance("https://moneybook-86d63-default-rtdb.europe-west1.firebasedatabase.app").reference
@@ -108,8 +112,7 @@ class Home : Fragment() {
         user_transactions = ArrayList<UserTransaction>()
         addTransactionButton = view?.findViewById<View>(R.id.addTransactionsBtn) as Button
 
-        //Load circle progress bar
-        pb = view?.findViewById(R.id.progressBar) as ProgressBar
+
 
 
         //Init calendar's popup
@@ -124,6 +127,7 @@ class Home : Fragment() {
 
         //set total balance
         calculateTotalBalance()
+        pb.visibility = View.GONE
     }
 
     fun addTransaction(){

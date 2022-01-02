@@ -1,6 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:weightSum="8">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/image_settings"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_action_user_settings"
+        android:background="@drawable/textlines"
+        app:tint="@color/black">
+    </ImageView>
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/image_settings"
+        android:hint="Nome:"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp">
+    </TextView>
+
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/tvName">
+    </EditText>
+
+    <TextView
+        android:id="@+id/tvSurname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextName"
+        android:hint="Cognome:"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp">
+    </TextView>
+
+    <EditText
+        android:id="@+id/editTextSurname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/tvSurname">
+    </EditText>
+
+    <TextView
+        android:id="@+id/tvMail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextSurname"
+        android:hint="E-mail:"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp">
+    </TextView>
+
+    <EditText
+        android:id="@+id/editTextMail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvMail"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:editable="false">
+
+    </EditText>
+
+
+    <Button
+        android:id="@+id/saveUserSettings"
+        style="@style/Base.Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextMail"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_alignParentRight="true"
+        android:text="SALVA"/>
+
+
+
+        <TextView
+            android:id="@+id/editTextChangePassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Cambio password? Clicca qui"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_below="@id/saveUserSettings"
+            android:focusable="true">
+        </TextView>
+
+    <Button
+        android:id="@+id/deleteUserButton"
+        android:backgroundTint="@color/red"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextChangePassword"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_centerHorizontal="true"
+        android:text="ELIMINA ACCOUNT"/>
+
+
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"/>
+
+
+
+</RelativeLayout>
