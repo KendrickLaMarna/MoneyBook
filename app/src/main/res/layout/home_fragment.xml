@@ -20,6 +20,7 @@
         android:textStyle="bold"
         android:layout_centerHorizontal="true">
     </TextView>
+
     <TextView
         android:id="@+id/bilancio_totale"
         android:layout_width="wrap_content"
@@ -41,6 +42,28 @@
         android:textSize = "10dp"
         android:textStyle="bold"
         android:text="">
+    </TextView>
+
+    <TextView
+        android:id="@+id/textView_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/entrateUscite">
+    </TextView>
+
+    <TextView
+        android:id="@+id/textView_descrizione"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Descrizione"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/entrateUscite">
     </TextView>
 
     <LinearLayout
@@ -144,10 +167,9 @@
         <TableLayout
             android:id="@+id/tableResults"
             android:layout_width="match_parent"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_height="wrap_content">
-
+            android:layout_height="wrap_content"
+            android:divider="@color/black"
+            android:showDividers="middle">
         </TableLayout>
     </ScrollView>
 

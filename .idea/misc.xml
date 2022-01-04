@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable-anydpi/ic_trashCan.xml" value="0.15208333333333332" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.13072916666666667" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.13072916666666667" />
         <entry key="app/src/main/res/drawable/tab_color.xml" value="0.13072916666666667" />
@@ -10,7 +11,7 @@
         <entry key="app/src/main/res/drawable/textlines.xml" value="0.15208333333333332" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/confirm_email_code.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/home_fragment.xml" value="0.15480869408924494" />
+        <entry key="app/src/main/res/layout/home_fragment.xml" value="0.18017309578937346" />
         <entry key="app/src/main/res/layout/main_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout/register_window.xml" value="0.165" />
         <entry key="app/src/main/res/layout/statistics.xml" value="0.11458333333333333" />

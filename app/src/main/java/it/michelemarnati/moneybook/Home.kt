@@ -24,6 +24,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 import android.app.DatePickerDialog
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.view.marginTop
 import java.text.SimpleDateFormat
 
 
@@ -51,6 +53,7 @@ class Home : Fragment() {
 
         //Display the calendar's popup when EditText of date is clicked
         date_transaction!!.setOnClickListener{
+            date_transaction.setError(null)
             this.context?.let { it1 ->
                 DatePickerDialog(
                     it1,
@@ -207,44 +210,67 @@ class Home : Fragment() {
 
     fun populateTableTransactions(user_transactions: ArrayList<UserTransaction>){
         table_transactions.removeAllViews()
+
         for(transaction in user_transactions) run {
-            val date = TextView(this.context)
+            var date = TextView(this.context)
             date.layoutParams = TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT)
             date.gravity = 1
             date.text = transaction.date
             date.setPadding(10)
-            val description = TextView(this.context)
+            var description = TextView(this.context)
             description.layoutParams = TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT)
             description.gravity = 1
             description.text = transaction.description
             description.setPadding(10)
-            val import = TextView(this.context)
+            var import = TextView(this.context)
             import.layoutParams = TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT)
             import.gravity = 1
             import.text = transaction.import.toString()
             import.setPadding(10)
-            val type = TextView(this.context)
-            type.layoutParams = TableRow.LayoutParams(
+
+            //image that deletes the transaction if clicked
+            var trashCan = ImageView(this.context)
+            trashCan.layoutParams = TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT)
-            type.gravity = 1
-            type.text = transaction.type
-            type.setPadding(10)
-
+            trashCan.setBackgroundResource(R.drawable.ic_trashcan)
+            trashCan.setPadding(10)
+            trashCan.setOnClickListener {
+                deleteTransaction(transaction.date, transaction.description, transaction.import, transaction.type)
+            }
             //adding columns into row
-            val trow = TableRow(this.context)
-            trow.setPadding(10,10,10,10)
+            var trow = TableRow(this.context)
+            //trow.setPadding(10,10,10,10)
+            trow.layoutParams = TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT)
             trow.addView(date)
             trow.addView(description)
             trow.addView(import)
-            trow.addView(type)
+            trow.addView(trashCan)
             table_transactions.addView(trow)
+            table_transactions.setColumnStretchable(1, true);
+            table_transactions.setColumnStretchable(2, true);
+
+            //Adding a line to separate rows
+            var rowSep = TableRow(this.context)
+            var line = View(this.context)
+            line.layoutParams = TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT, 1)
+            line.setBackgroundColor(getResources().getColor(R.color.black))
+            var lp = TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT)
+            lp.setMargins(0, 10, 0, 10)
+            rowSep.layoutParams = lp
+            rowSep.addView(line)
+            table_transactions.addView(rowSep)
         }
     }
 
@@ -380,6 +406,45 @@ class Home : Fragment() {
                 Log.e(ContentValues.TAG, "onCancelled", databaseError.toException())
             }
         })
+    }
+
+    private fun deleteTransaction(dateT:String, descriptionT:String, importT:Float, typeT:String){
+        pb.visibility = View.VISIBLE
+        val date = dateT
+        val description = descriptionT
+        val import = importT
+        val type = typeT
+        val user_trs: UserTransaction = UserTransaction(
+            date, description, import, type)
+
+        database.child("users").child(auth.currentUser!!.uid).addListenerForSingleValueEvent(object :
+            ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val t: GenericTypeIndicator<List<UserTransaction>> =
+                    object : GenericTypeIndicator<List<UserTransaction>>() {}
+
+                user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
+
+                user_transactions.remove(user_transactions.find {
+                    it.date.equals(user_trs.date)  &&
+                            it.description.equals(user_trs.description.toLowerCase().trim()) &&
+                            it.import == user_trs.import &&
+                            it.type.equals(user_trs.type)
+                })
+                database.child("users").child(auth.currentUser!!.uid).child("transactions").setValue(user_transactions)
+
+                //Update transactions' table and total balance
+                populateTableTransactions(user_transactions)
+                calculateTotalBalance()
+                pb.visibility = View.GONE
+                Toast.makeText(context, getString(R.string.transaction_deleted_successfully), Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(ContentValues.TAG, "onCancelled", databaseError.toException())
+            }
+        })
+
     }
 
     private fun isNumeric(str: String) = str

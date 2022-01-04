@@ -73,6 +73,7 @@ class Statistics: Fragment() {
         //Initialize table of transactions
         table_transactions = view?.findViewById<View>(R.id.tableResults) as TableLayout
         data_statistiche.setOnClickListener {
+            data_statistiche.setError(null)
             var builder: MonthPickerDialog.Builder  = MonthPickerDialog.Builder(this.context,
                 { i: Int, i1: Int ->
                     data_statistiche.text = Editable.Factory.getInstance().newEditable(if((i + 1) < 10){"0" + (i + 1).toString() + "/" + i1} else (i + 1).toString() + "/" + i1)
@@ -239,23 +240,23 @@ class Statistics: Fragment() {
             import.gravity = 1
             import.text = transaction.import.toString()
             import.setPadding(10)
-            val type = TextView(this.context)
-            type.layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT)
-            type.gravity = 1
-            type.text = transaction.type
-            type.setPadding(10)
+//            val type = TextView(this.context)
+//            type.layoutParams = TableRow.LayoutParams(
+//                TableRow.LayoutParams.MATCH_PARENT,
+//                TableRow.LayoutParams.WRAP_CONTENT)
+//            type.gravity = 1
+//            type.text = transaction.type
+//            type.setPadding(10)
 
             //adding columns into row
             val trow = TableRow(this.context)
-            trow.setPadding(10,10,10,10)
             trow.addView(date)
             trow.addView(description)
             trow.addView(import)
-            trow.addView(type)
             trow.weightSum = 4f
             table_transactions.addView(trow)
+            table_transactions.setColumnStretchable(1, true);
+            table_transactions.setColumnStretchable(2, true);
         }
     }
 
