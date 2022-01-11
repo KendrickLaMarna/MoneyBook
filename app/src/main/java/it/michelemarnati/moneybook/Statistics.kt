@@ -14,6 +14,8 @@ import android.content.DialogInterface
 import android.os.Build
 import android.text.Editable
 import android.util.Log
+import android.view.Gravity
+import android.view.View.SCROLLBARS_OUTSIDE_OVERLAY
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import java.util.*
@@ -28,6 +30,10 @@ import com.google.firebase.ktx.Firebase
 import com.whiteelephant.monthpicker.MonthPickerDialog
 import java.lang.Exception
 import java.text.SimpleDateFormat
+import android.widget.LinearLayout
+
+
+
 
 
 class Statistics: Fragment() {
@@ -72,6 +78,7 @@ class Statistics: Fragment() {
 
         //Initialize table of transactions
         table_transactions = view?.findViewById<View>(R.id.tableResults) as TableLayout
+
         data_statistiche.setOnClickListener {
             data_statistiche.setError(null)
             var builder: MonthPickerDialog.Builder  = MonthPickerDialog.Builder(this.context,
@@ -218,45 +225,82 @@ class Statistics: Fragment() {
     }
 
     fun populateTableTransactions(user_transactions: ArrayList<UserTransaction>){
+        //Adding an initial line
+        var rowSep = TableRow(this.context)
+        var line = View(this.context)
+        line.layoutParams = TableRow.LayoutParams(
+            TableRow.LayoutParams.MATCH_PARENT, 1)
+        line.setBackgroundColor(getResources().getColor(R.color.black))
+        var lp = TableRow.LayoutParams(
+            TableRow.LayoutParams.MATCH_PARENT,
+            TableRow.LayoutParams.WRAP_CONTENT)
+        lp.setMargins(0, 10, 0, 10)
+        rowSep.layoutParams = lp
+        rowSep.addView(line)
+        table_transactions.addView(rowSep)
         for(transaction in user_transactions) run {
-            val date = TextView(this.context)
+            var date = TextView(this.context)
             date.layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT)
-            date.gravity = 1
+                TableRow.LayoutParams.WRAP_CONTENT,
+                200)
+            date.gravity = Gravity.CENTER
             date.text = transaction.date
             date.setPadding(10)
-            val description = TextView(this.context)
+            var description = TextView(this.context)
             description.layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT)
-            description.gravity = 1
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.MATCH_PARENT)
+            description.gravity = Gravity.CENTER
             description.text = transaction.description
             description.setPadding(10)
-            val import = TextView(this.context)
+            var import = TextView(this.context)
             import.layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT)
-            import.gravity = 1
-            import.text = transaction.import.toString()
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.MATCH_PARENT)
+            import.gravity = Gravity.CENTER
+            import.text = when(transaction.type){
+                "Stipendio" -> {
+                    "+" + transaction.import.toString() + "€"
+                }
+                "Entrate varie" -> {
+                    "+" + transaction.import.toString() + "€"
+                }
+                else -> {
+                    "-" + transaction.import.toString() + "€"
+                }
+            }
             import.setPadding(10)
-//            val type = TextView(this.context)
-//            type.layoutParams = TableRow.LayoutParams(
-//                TableRow.LayoutParams.MATCH_PARENT,
-//                TableRow.LayoutParams.WRAP_CONTENT)
-//            type.gravity = 1
-//            type.text = transaction.type
-//            type.setPadding(10)
+
+
 
             //adding columns into row
-            val trow = TableRow(this.context)
+            var trow = TableRow(this.context)
+            //trow.setPadding(10,10,10,10)
+            trow.layoutParams = TableLayout.LayoutParams(
+                TableLayout.LayoutParams.MATCH_PARENT,
+                0, 1F)
             trow.addView(date)
             trow.addView(description)
             trow.addView(import)
-            trow.weightSum = 4f
-            table_transactions.addView(trow)
+            table_transactions.addView(trow, TableLayout.LayoutParams(
+                TableLayout.LayoutParams.MATCH_PARENT,
+                TableLayout.LayoutParams.MATCH_PARENT))
             table_transactions.setColumnStretchable(1, true);
             table_transactions.setColumnStretchable(2, true);
+
+            //Adding a line to separate rows
+            var rowSep = TableRow(this.context)
+            var line = View(this.context)
+            line.layoutParams = TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT, 1)
+            line.setBackgroundColor(getResources().getColor(R.color.black))
+            var lp = TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT)
+            lp.setMargins(0, 10, 0, 10)
+            rowSep.layoutParams = lp
+            rowSep.addView(line)
+            table_transactions.addView(rowSep)
         }
     }
 

@@ -8,6 +8,28 @@
 
 
 
+    <TextView
+        android:id="@+id/welcome1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="50dp"
+        android:textSize="25dp"
+        android:text="@string/welcome_string1">
+    </TextView>
+
+    <TextView
+        android:id="@+id/welcome2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/welcome1"
+        android:text="@string/welcome_string2">
+    </TextView>
+
     <EditText
         android:id="@+id/editTextSignUpMail"
         android:layout_width="match_parent"

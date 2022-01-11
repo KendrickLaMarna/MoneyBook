@@ -1,5 +1,6 @@
 package it.michelemarnati.moneybook
 
+import android.R.attr
 import android.app.Activity
 import android.content.ContentValues
 import androidx.fragment.app.Fragment
@@ -24,9 +25,13 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 import android.app.DatePickerDialog
+import android.util.DisplayMetrics
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.view.marginTop
+import androidx.core.view.size
 import java.text.SimpleDateFormat
+import android.R.attr.rowHeight
+import android.view.Gravity.CENTER
 
 
 class Home : Fragment() {
@@ -211,50 +216,77 @@ class Home : Fragment() {
     fun populateTableTransactions(user_transactions: ArrayList<UserTransaction>){
         table_transactions.removeAllViews()
 
+        //Adding an initial line
+        var rowSep = TableRow(this.context)
+        var line = View(this.context)
+        line.layoutParams = TableRow.LayoutParams(
+            TableRow.LayoutParams.MATCH_PARENT, 1)
+        line.setBackgroundColor(getResources().getColor(R.color.black))
+        var lp = TableRow.LayoutParams(
+            TableRow.LayoutParams.MATCH_PARENT,
+            TableRow.LayoutParams.WRAP_CONTENT)
+        lp.setMargins(0, 10, 0, 10)
+        rowSep.layoutParams = lp
+        rowSep.addView(line)
+        table_transactions.addView(rowSep)
         for(transaction in user_transactions) run {
             var date = TextView(this.context)
             date.layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT)
-            date.gravity = 1
+                TableRow.LayoutParams.WRAP_CONTENT,
+                200)
+            date.gravity = CENTER
             date.text = transaction.date
             date.setPadding(10)
             var description = TextView(this.context)
             description.layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT)
-            description.gravity = 1
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.MATCH_PARENT)
+            description.gravity = CENTER
             description.text = transaction.description
             description.setPadding(10)
             var import = TextView(this.context)
             import.layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT)
-            import.gravity = 1
-            import.text = transaction.import.toString()
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.MATCH_PARENT)
+            import.gravity = CENTER
+            import.text = when(transaction.type){
+                "Stipendio" -> {
+                    "+" + transaction.import.toString() + "€"
+                }
+                "Entrate varie" -> {
+                    "+" + transaction.import.toString() + "€"
+                }
+                else -> {
+                    "-" + transaction.import.toString() + "€"
+                }
+            }
             import.setPadding(10)
 
             //image that deletes the transaction if clicked
             var trashCan = ImageView(this.context)
             trashCan.layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT,
                 TableRow.LayoutParams.WRAP_CONTENT)
             trashCan.setBackgroundResource(R.drawable.ic_trashcan)
             trashCan.setPadding(10)
             trashCan.setOnClickListener {
                 deleteTransaction(transaction.date, transaction.description, transaction.import, transaction.type)
             }
+
             //adding columns into row
             var trow = TableRow(this.context)
             //trow.setPadding(10,10,10,10)
-            trow.layoutParams = TableRow.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT)
+            trow.layoutParams = TableLayout.LayoutParams(
+                TableLayout.LayoutParams.MATCH_PARENT,
+                0, 1F)
             trow.addView(date)
             trow.addView(description)
             trow.addView(import)
             trow.addView(trashCan)
-            table_transactions.addView(trow)
+            trow.gravity = CENTER
+            table_transactions.addView(trow, TableLayout.LayoutParams(
+                TableLayout.LayoutParams.MATCH_PARENT,
+                TableLayout.LayoutParams.MATCH_PARENT))
             table_transactions.setColumnStretchable(1, true);
             table_transactions.setColumnStretchable(2, true);
 

@@ -15,22 +15,30 @@
     <string name="error_existing_transaction">Transazione già esistente</string>
     <string name="error_empty_name_surname">I campi nome e cognome non possono essere vuoti</string>
     <string name ="transaction_deleted_successfully">Transazione eliminata con successo</string>
+    <string name ="welcome_string1">Benvenuti in MoneyBook!</string>
+    <string name ="welcome_string2">Tieni traccia dei tuoi movimenti</string>
 
 
 
     <string-array name="transaction_type_array">
+        <item>Benzina</item>
+        <item>Casa</item>
+        <item>Ristorante</item>
+        <item>Spesa</item>
         <item>Stipendio</item>
         <item>Tasse</item>
-        <item>Spesa</item>
         <item>Entrate varie</item>
         <item>Uscite varie</item>
     </string-array>
 
     <string-array name="searchTransaction_type_array">
         <item>Tutte</item>
+        <item>Benzina</item>
+        <item>Casa</item>
+        <item>Ristorante</item>
+        <item>Spesa</item>
         <item>Stipendio</item>
         <item>Tasse</item>
-        <item>Spesa</item>
         <item>Entrate varie</item>
         <item>Uscite varie</item>
     </string-array>

@@ -165,7 +165,11 @@ class RegisterWindow : AppCompatActivity(){
                             val confirmCodeWindowIntent =
                                 Intent(applicationContext, ConfirmEmailCode::class.java)
                             try {
-                                confirmCodeWindowIntent.putExtra("emailCode", alphanumeric)
+                                val emailCodeArray = ArrayList<String>()
+                                emailCodeArray.add(editTextEmail!!.text.toString())
+                                emailCodeArray.add(editTextName!!.text.toString())
+                                emailCodeArray.add(alphanumeric!!)
+                                confirmCodeWindowIntent.putExtra("emailCode", emailCodeArray)
                                 startActivityForResult(
                                     confirmCodeWindowIntent,
                                     LAUNCH_CONFIRM_EMAIL_CODE
