@@ -31,9 +31,8 @@ import com.whiteelephant.monthpicker.MonthPickerDialog
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import android.widget.LinearLayout
-
-
-
+import android.widget.AdapterView
+import androidx.core.text.isDigitsOnly
 
 
 class Statistics: Fragment() {
@@ -42,6 +41,7 @@ class Statistics: Fragment() {
     private lateinit var user_transactions: ArrayList<UserTransaction>
     private lateinit var data_statistiche:EditText
     private lateinit var spinner: Spinner
+    private lateinit var statistics_selector: Spinner
     private lateinit var searchButton: Button
     private lateinit var table_transactions: TableLayout
     private lateinit var pb: ProgressBar
@@ -79,20 +79,10 @@ class Statistics: Fragment() {
         //Initialize table of transactions
         table_transactions = view?.findViewById<View>(R.id.tableResults) as TableLayout
 
-        data_statistiche.setOnClickListener {
-            data_statistiche.setError(null)
-            var builder: MonthPickerDialog.Builder  = MonthPickerDialog.Builder(this.context,
-                { i: Int, i1: Int ->
-                    data_statistiche.text = Editable.Factory.getInstance().newEditable(if((i + 1) < 10){"0" + (i + 1).toString() + "/" + i1} else (i + 1).toString() + "/" + i1)
-                }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH));
+        //Initialize circle progress bar
+        pb = view?.findViewById(R.id.progressBar) as ProgressBar
 
-            builder.setActivatedMonth(myCalendar.get(Calendar.MONTH))
-                .setMinYear(1990)
-                .setActivatedYear(myCalendar.get(Calendar.YEAR))
-                .setMaxYear(2050)
-                .setTitle("Select trading month")
-                .build().show();
-        }
+
 
 
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -108,9 +98,6 @@ class Statistics: Fragment() {
                 spinner.adapter = adapter
             }
         }
-
-        //Circle progress bar
-        pb = view?.findViewById(R.id.progressBar) as ProgressBar
 
         searchButton!!.setOnClickListener {
 
@@ -128,6 +115,73 @@ class Statistics: Fragment() {
                 pb.visibility = View.GONE
             }
         }
+
+        //Initialize spinner which contains statistics selector
+        statistics_selector = view?.findViewById<View>(R.id.statistics_selector_spinner) as Spinner
+        this.context?.let {
+            ArrayAdapter.createFromResource(
+                it,
+                R.array.statistics_selection_array,
+                android.R.layout.simple_spinner_item
+            ).also { adapter ->
+                // Specify the layout to use when the list of choices appears
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                // Apply the adapter to the spinner
+                statistics_selector.adapter = adapter
+            }
+        }
+
+        statistics_selector.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                data_statistiche.setOnClickListener { null }
+                data_statistiche.text = null
+                refresh()
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                if (selectedItem == "Statistiche mensili") {
+                    data_statistiche.setOnClickListener {
+                        data_statistiche.setError(null)
+                        var builder: MonthPickerDialog.Builder  = MonthPickerDialog.Builder(context,
+                            { i: Int, i1: Int ->
+                                data_statistiche.text = Editable.Factory.getInstance().newEditable(if((i + 1) < 10){"0" + (i + 1).toString() + "/" + i1} else (i + 1).toString() + "/" + i1)
+                            }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH));
+
+                        builder.setActivatedMonth(myCalendar.get(Calendar.MONTH))
+                            .setMinYear(1990)
+                            .setActivatedYear(myCalendar.get(Calendar.YEAR))
+                            .setMaxYear(2050)
+                            .setTitle("Select trading month")
+                            .build().show();
+                    }
+
+
+                }
+                else if (selectedItem == "Statistiche annuali") {
+                    data_statistiche.setOnClickListener {
+                        data_statistiche.setError(null)
+                        var builder: MonthPickerDialog.Builder  = MonthPickerDialog.Builder(context,
+                            { i: Int, i1: Int ->
+                                data_statistiche.text = Editable.Factory.getInstance().newEditable(i1.toString())
+                            }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH));
+
+                        builder.setActivatedMonth(myCalendar.get(Calendar.MONTH))
+                            .setMinYear(myCalendar.get(Calendar.YEAR) - 30)
+                            .setActivatedYear(myCalendar.get(Calendar.YEAR))
+                            .setMaxYear(myCalendar.get(Calendar.YEAR) + 30)
+                            .setTitle("Select year")
+                            .showYearOnly()
+                            .build().show();
+                    }
+
+                }
+
+            } // to close the onItemSelected
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        })
+
+
+
+
 
     }
 
@@ -161,57 +215,116 @@ class Statistics: Fragment() {
                 if(dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction> != null){
                     user_transactions = dataSnapshot.child("transactions").getValue(t) as ArrayList<UserTransaction>
 
-                    if(type.equals("Tutte")){
-                        for(transaction in user_transactions) run{
-                            val dateSplit = transaction.date.split("/")
-                            val ds = dateSplit[1] + "/" + dateSplit[2]
-                            if(ds.equals(dataStats)){
-                                user_monthTransactions.add(transaction)
-                                when(transaction.type){
-                                    "Stipendio" -> {
-                                        entrate += transaction.import
-                                        bilancio += transaction.import
-                                    }
-                                    "Entrate varie" -> {
-                                        entrate += transaction.import
-                                        bilancio += transaction.import
-                                    }
-                                    else -> {
-                                        uscite += transaction.import
-                                        bilancio -= transaction.import
+                    //check if stats are monthly or for years
+                    if(!dataStats.isDigitsOnly()){
+                        if(type.equals("Tutte")){
+                            for(transaction in user_transactions) run{
+                                val dateSplit = transaction.date.split("/")
+                                val ds = dateSplit[1] + "/" + dateSplit[2]
+                                if(ds.equals(dataStats)){
+                                    user_monthTransactions.add(transaction)
+                                    when(transaction.type){
+                                        "Stipendio" -> {
+                                            entrate += transaction.import
+                                            bilancio += transaction.import
+                                        }
+                                        "Entrate varie" -> {
+                                            entrate += transaction.import
+                                            bilancio += transaction.import
+                                        }
+                                        else -> {
+                                            uscite += transaction.import
+                                            bilancio -= transaction.import
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    else{
-                        for(transaction in user_transactions) run{
-                            val dateSplit = transaction.date.split("/")
-                            val ds = dateSplit[1] + "/" + dateSplit[2]
+                        else{
+                            for(transaction in user_transactions) run{
+                                val dateSplit = transaction.date.split("/")
+                                val ds = dateSplit[1] + "/" + dateSplit[2]
 
-                            if(ds.equals(dataStats) && transaction.type.equals(type)){
-                                user_monthTransactions.add(transaction)
-                                when(transaction.type){
-                                    "Stipendio" -> {
-                                        entrate += transaction.import
-                                        bilancio += transaction.import
-                                    }
-                                    "Entrate varie" -> {
-                                        entrate += transaction.import
-                                        bilancio += transaction.import
-                                    }
-                                    else -> {
-                                        uscite += transaction.import
-                                        bilancio -= transaction.import
+                                if(ds.equals(dataStats) && transaction.type.equals(type)){
+                                    user_monthTransactions.add(transaction)
+                                    when(transaction.type){
+                                        "Stipendio" -> {
+                                            entrate += transaction.import
+                                            bilancio += transaction.import
+                                        }
+                                        "Entrate varie" -> {
+                                            entrate += transaction.import
+                                            bilancio += transaction.import
+                                        }
+                                        else -> {
+                                            uscite += transaction.import
+                                            bilancio -= transaction.import
+                                        }
                                     }
                                 }
                             }
                         }
+                        tvTotale.text = tvTotale.text.toString() + " " + bilancio.toString() + " €"
+                        tvEntrate.text = tvEntrate.text.toString() + " +" + entrate.toString() + " €"
+                        tvUscite.text = tvUscite.text.toString() + " -" + uscite.toString() + " €"
+                        populateTableTransactions(user_monthTransactions)
                     }
-                    tvTotale.text = tvTotale.text.toString() + " €" + bilancio.toString()
-                    tvEntrate.text = tvEntrate.text.toString() + " +" + entrate.toString()
-                    tvUscite.text = tvUscite.text.toString() + " -" + uscite.toString()
-                    populateTableTransactions(user_monthTransactions)
+                    //statistics for year
+                    else{
+                        if(type.equals("Tutte")){
+                            for(transaction in user_transactions) run{
+                                val dateSplit = transaction.date.split("/")
+                                val ds = dateSplit[2]
+                                if(ds.equals(dataStats)){
+                                    user_monthTransactions.add(transaction)
+                                    when(transaction.type){
+                                        "Stipendio" -> {
+                                            entrate += transaction.import
+                                            bilancio += transaction.import
+                                        }
+                                        "Entrate varie" -> {
+                                            entrate += transaction.import
+                                            bilancio += transaction.import
+                                        }
+                                        else -> {
+                                            uscite += transaction.import
+                                            bilancio -= transaction.import
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            for(transaction in user_transactions) run{
+                                val dateSplit = transaction.date.split("/")
+                                val ds = dateSplit[2]
+
+                                if(ds.equals(dataStats) && transaction.type.equals(type)){
+                                    user_monthTransactions.add(transaction)
+                                    when(transaction.type){
+                                        "Stipendio" -> {
+                                            entrate += transaction.import
+                                            bilancio += transaction.import
+                                        }
+                                        "Entrate varie" -> {
+                                            entrate += transaction.import
+                                            bilancio += transaction.import
+                                        }
+                                        else -> {
+                                            uscite += transaction.import
+                                            bilancio -= transaction.import
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        tvTotale.text = tvTotale.text.toString() + " " + bilancio.toString() + " €"
+                        tvEntrate.text = tvEntrate.text.toString() + " +" + entrate.toString() + " €"
+                        tvUscite.text = tvUscite.text.toString() + " -" + uscite.toString() + " €"
+                        populateTableTransactions(user_monthTransactions)
+
+                    }
+
                 }
                 pb.visibility = View.GONE
             }
