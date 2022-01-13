@@ -149,8 +149,7 @@ class Home : Fragment() {
         val single_transaction = ArrayList<UserTransaction>()
 
         single_transaction.add(UserTransaction(date.text.toString(), description.text.toString(), import.text.toString().toFloat(), type.selectedItem.toString()))
-//        //Insert user transaction in table
-//        populateTableTransactions(single_transaction)
+
 
         //Update data in Firebase database
         database.child("users").child(auth.currentUser!!.uid).addListenerForSingleValueEvent(object :

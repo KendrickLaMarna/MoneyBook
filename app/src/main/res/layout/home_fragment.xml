@@ -65,7 +65,8 @@
             android:layout_width="0dp"
             android:layout_weight="0.4"
             android:layout_height="wrap_content"
-            android:text="Data:">
+            android:text="Data:"
+            android:textColor="@color/black">
         </TextView>
 
         <EditText
@@ -79,7 +80,6 @@
             android:focusableInTouchMode="false"
             android:maxLines="1"
             android:hint="Data"
-            android:textColorHint="@color/black"
             android:textColor="@color/black"/>
 
         <TextView
@@ -87,7 +87,8 @@
             android:layout_width="0dp"
             android:layout_weight="0.9"
             android:layout_height="wrap_content"
-            android:text="Descrizione:">
+            android:text="Descrizione:"
+            android:textColor="@color/black">
         </TextView>
 
         <EditText
@@ -98,7 +99,6 @@
             android:hint="Descrizione"
             android:maxLines="1"
             android:maxLength="20"
-            android:textColorHint="@color/black"
             android:textColor="@color/black"/>
     </LinearLayout>
 
@@ -118,7 +118,8 @@
             android:layout_width="0dp"
             android:layout_weight="0.6"
             android:layout_height="wrap_content"
-            android:text="Importo:">
+            android:text="Importo:"
+            android:textColor="@color/black">
         </TextView>
         <EditText
             android:id="@+id/import_transaction"
@@ -128,7 +129,6 @@
             android:hint="Importo"
             android:maxLines="1"
             android:maxLength="6"
-            android:textColorHint="@color/black"
             android:textColor="@color/black"/>
 
         <TextView
@@ -136,7 +136,8 @@
             android:layout_width="0dp"
             android:layout_weight="0.4"
             android:layout_height="wrap_content"
-            android:text="Tipo:">
+            android:text="Tipo:"
+            android:textColor="@color/black">
         </TextView>
         <Spinner
             android:id="@+id/transaction_type_spinner"

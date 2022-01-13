@@ -10,6 +10,7 @@
     <string name="error_register_existing_mail">E-mail già in uso</string>
     <string name="invalid_mail_or_password">Credenziali errate</string>
     <string name="error_empty_date">Inserire una data</string>
+    <string name="error_empty_code">Inserire il codice</string>
     <string name="error_empty_description">Inserire una descrizione</string>
     <string name="error_invalid_import">Inserire un importo valido</string>
     <string name="error_existing_transaction">Transazione già esistente</string>

@@ -112,7 +112,6 @@ class RegisterWindow : AppCompatActivity(){
                                     }
                                 });
 
-
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.exception)
@@ -120,6 +119,10 @@ class RegisterWindow : AppCompatActivity(){
                                 Toast.LENGTH_SHORT).show()
                         }
                     }
+                finish()
+
+            }
+            else if (resultCode == RESULT_CANCELED){
                 finish()
             }
         }
@@ -159,6 +162,7 @@ class RegisterWindow : AppCompatActivity(){
                         && !(editTextPsw!!.text.toString().equals(""))
                         && !(editTextName!!.text.toString().equals(""))
                         && !(editTextSurname!!.text.toString().equals(""))
+                        && (editTextPsw!!.text.toString().length >= 6)
                     ) {
                         sendEmail()
                         Handler().postDelayed({
@@ -205,7 +209,7 @@ class RegisterWindow : AppCompatActivity(){
                             editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
                             editTextConfirmPsw!!.setError(getString(R.string.error_register_empty_psw))
                             Toast.makeText(this, getString(R.string.error_register_empty_psw), Toast.LENGTH_SHORT).show()
-                        } else if (editTextPsw!!.text.toString().length < 5) {
+                        } else if (editTextPsw!!.text.toString().length < 6) {
                             editTextPsw!!.setError(getString(R.string.error_register_short_psw))
                             editTextConfirmPsw!!.setError(getString(R.string.error_register_short_psw))
                             Toast.makeText(this, getString(R.string.error_register_short_psw), Toast.LENGTH_SHORT).show()
@@ -247,7 +251,7 @@ class RegisterWindow : AppCompatActivity(){
                 editTextPsw!!.setError(getString(R.string.error_register_empty_psw))
                 editTextConfirmPsw!!.setError(getString(R.string.error_register_empty_psw))
                 Toast.makeText(this, getString(R.string.error_register_empty_psw), Toast.LENGTH_SHORT).show()
-            } else if (editTextPsw!!.text.toString().length < 5) {
+            } else if (editTextPsw!!.text.toString().length < 6) {
                 editTextPsw!!.setError(getString(R.string.error_register_short_psw))
                 editTextConfirmPsw!!.setError(getString(R.string.error_register_short_psw))
                 Toast.makeText(this, getString(R.string.error_register_short_psw), Toast.LENGTH_SHORT).show()

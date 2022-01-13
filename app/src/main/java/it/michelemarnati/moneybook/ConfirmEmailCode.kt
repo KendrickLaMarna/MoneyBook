@@ -10,6 +10,7 @@ import android.content.DialogInterface
 
 import android.content.Intent
 import android.os.Handler
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import java.util.*
 
@@ -43,21 +44,26 @@ class ConfirmEmailCode: AppCompatActivity() {
                         finish()})
                     .show();
             }
+            else if(editTextCode!!.text.toString().equals("")){
+                Toast.makeText(this@ConfirmEmailCode, getString(R.string.error_empty_code), Toast.LENGTH_SHORT).show()
+                editTextCode!!.setError(getString(R.string.error_empty_code))
+            }
             else {
-                resultIntent.putExtra("result", false)
-                setResult(Activity.RESULT_CANCELED, resultIntent)
                 AlertDialog.Builder(this@ConfirmEmailCode)
                     .setTitle("Codice errato")
                     .setMessage("Hai inserito il codice sbagliato.")
-                    .setPositiveButton("OK",
-                        DialogInterface.OnClickListener { dialog, whichButton ->
-                            dialog.dismiss()
-                            finish()})
                     .setPositiveButton("REINVIA",
                         DialogInterface.OnClickListener { dialog, whichButton ->
                             dialog.dismiss()
                             sendEmail(email, name)
                             })
+                    .setNegativeButton("ANNULLA",
+                        DialogInterface.OnClickListener { dialog, whichButton ->
+                            resultIntent.putExtra("result", false)
+                            setResult(Activity.RESULT_CANCELED, resultIntent)
+                            dialog.dismiss()
+                            finish()
+                        })
                     .show();
             }
 
